@@ -139,6 +139,7 @@ export default function CoreAdjectivePositionPredicative() {
            <p className="font-semibold mt-3">B. Viết lại câu sau, chuyển tính từ từ vị trí thuộc tính sang vị trí vị ngữ:</p>
            {/* Fix: Changed start="3" to start={3} to provide a number instead of a string, resolving the TypeScript error. */}
            <ol className="list-decimal pl-6 mt-2 space-y-2" start={3}>
+            {/* Fix: Removed invalid 'start' attribute from <li> element. It is redundant as <ol> already sets the starting number. */}
             <li>This is a difficult exercise.
             <br/>→ This exercise is ______.</li>
            </ol>

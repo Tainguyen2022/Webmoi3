@@ -19,13 +19,14 @@ export interface Unit {
 export type Subject = 'I' | 'you' | 'we' | 'they' | 'he' | 'she' | 'it' | 'N (số nhiều)' | 'danh từ số ít';
 
 export interface Lemma {
-  type: 'verb' | 'adj' | 'adv' | 'noun' | 'prep';
+  type: 'verb' | 'adj' | 'adv' | 'noun' | 'prep' | 'conj';
   text: string;
   base?: string;
   past?: string;
   pp?: string;
   ing?: string;
   article?: string;
+  vi?: string;
 }
 
 export interface Flags {
@@ -53,6 +54,7 @@ export interface VocabItem {
     word?: string;
     type?: string;
     article?: string;
+    vi?: string;
 }
 
 export type VocabPack = Record<string, VocabItem[]>;
@@ -81,7 +83,8 @@ export interface BugReport {
 
 // --- Types for Solve Engine ---
 // Fix: Added 'GER' to TokenType to support Gerunds.
-export type TokenType = 'ART' | 'ADJ' | 'ADV' | 'N' | 'V' | 'PREP' | 'CONJ' | 'EXTRA' | 'PATTERN' | 'GER';
+// Fix: Added 'N_MOD' and 'N_HEAD' to TokenType to support compound nouns and fix type errors.
+export type TokenType = 'ART' | 'ADJ' | 'ADV' | 'N' | 'V' | 'PREP' | 'CONJ' | 'EXTRA' | 'PATTERN' | 'GER' | 'N_MOD' | 'N_HEAD';
 export type AdjectiveCategory = 'opinion' | 'size' | 'age' | 'shape' | 'color' | 'origin' | 'material' | 'purpose';
 export type NounCountability = 'C' | 'U' | 'B'; // Countable, Uncountable, Both
 export type DeterminerConstraint = 'singular' | 'plural' | 'uncountable';

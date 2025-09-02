@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { HashRouter, Routes, Route, NavLink } from 'react-router-dom';
 import HomePage from './pages/HomePage';
@@ -15,7 +14,7 @@ const App: React.FC = () => {
 
   return (
     <HashRouter>
-      <div className="min-h-screen flex flex-col font-sans bg-gray-50">
+      <div className="min-h-screen flex flex-col font-sans bg-slate-50">
         <header className="sticky top-0 bg-white/80 backdrop-blur-md shadow-sm z-50">
           <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">

@@ -1,19 +1,116 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Unit, Group, GrammarState, Subject, Flags, Lemma } from '../types';
+import { Unit, Group, GrammarState, Subject, Flags, Lemma, VocabItem } from '../types';
 import { units } from '../data/units';
 import { groups } from '../data/groups';
 import { INITIAL_LEMMA } from '../constants';
-import { generateSentence, getFlagsForUnit, maybeShorten } from '../services/grammarService';
+import { generateSentence, maybeShorten, getFlagsForUnit } from '../services/grammarService';
 import CoreHost from '../components/CoreHost';
+import { vocab } from '../data/vocab';
+
+// --- Icon Components ---
+const ArrowsPointingOutIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className || "w-6 h-6"}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+    </svg>
+);
+
+const XMarkIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className || "w-6 h-6"}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+);
+
 
 // --- Re-styled & New Components ---
 
-const TopBar: React.FC = () => {
-    const wordTypes = ['Động từ', 'Tính từ', 'Trạng từ', 'Danh từ', 'Giới từ'];
+const VocabModal: React.FC<{
+    isOpen: boolean;
+    onClose: () => void;
+    wordType: string;
+    vocabPack: VocabItem[];
+    onSelect: (item: VocabItem) => void;
+}> = ({ isOpen, onClose, wordType, vocabPack, onSelect }) => {
+    const [searchQuery, setSearchQuery] = useState('');
+
+    useEffect(() => {
+        if (isOpen) {
+            setSearchQuery(''); // Reset search when modal opens
+        }
+    }, [isOpen]);
+
+    if (!isOpen) return null;
+
+    const filteredVocab = vocabPack.filter(item => {
+        const searchTerm = searchQuery.toLowerCase();
+        const english = (item.base || item.word || '').toLowerCase();
+        const vietnamese = (item.vi || '').toLowerCase();
+        return english.includes(searchTerm) || vietnamese.includes(searchTerm);
+    });
+    
+
+    const handleSelect = (item: VocabItem) => {
+        onSelect(item);
+        onClose();
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+            <div 
+                className="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[80vh] flex flex-col"
+                onClick={e => e.stopPropagation()} // Prevent closing when clicking inside modal
+            >
+                <header className="p-4 border-b flex items-center justify-between sticky top-0 bg-white rounded-t-2xl">
+                    <h3 className="text-lg font-bold">Chọn {wordType}</h3>
+                    <button onClick={onClose} className="text-gray-500 hover:text-gray-800 text-2xl font-bold">&times;</button>
+                </header>
+                <div className="p-4">
+                    <input
+                        type="search"
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                        placeholder="Tìm kiếm từ..."
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        autoFocus
+                    />
+                </div>
+                <div className="flex-grow overflow-y-auto p-4 pt-0">
+                    <ul className="space-y-1">
+                        {filteredVocab.map((item, index) => (
+                            <li key={index}>
+                                <button
+                                    onClick={() => handleSelect(item)}
+                                    className="w-full text-left p-2 rounded-lg hover:bg-gray-100 transition-colors flex justify-between items-center"
+                                >
+                                    <span className="font-semibold text-gray-800">{item.base || item.word}</span>
+                                    <span className="text-sm text-gray-500">{item.vi}</span>
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const TopBar: React.FC<{
+    onButtonClick: (type: string) => void;
+    activeType: string | null;
+}> = ({ onButtonClick, activeType }) => {
+    const wordTypes = ['Động từ', 'Động từ BQT', 'Tính từ', 'Trạng từ', 'Danh từ', 'Giới từ', 'Liên từ'];
+    
+    const getButtonClass = (type: string) => {
+        const base = "px-4 py-2 rounded-lg shadow-sm text-sm font-semibold transition-colors";
+        if (type === activeType) {
+            return `${base} bg-gray-800 text-white`;
+        }
+        return `${base} bg-white border border-gray-200 text-gray-700 hover:bg-gray-100`;
+    };
+
     return (
         <div className="flex items-center flex-wrap gap-2">
             {wordTypes.map(type => (
-                <button key={type} className="px-4 py-2 bg-white rounded-lg shadow-sm text-sm font-semibold text-gray-700 hover:bg-gray-100 transition-colors border border-gray-200">
+                <button key={type} className={getButtonClass(type)} onClick={() => onButtonClick(type)}>
                     {type}
                 </button>
             ))}
@@ -38,6 +135,20 @@ const SubjectVerbSelector: React.FC<{
     const subjectMap = {
         'I': 'I (Tôi)', 'you': 'You (Bạn)', 'we': 'We (Chúng tôi)', 'they': 'They (Họ)', 'he': 'He (Anh ấy)', 'she': 'She (Cô ấy)', 'it': 'It (Nó)', 'N (số nhiều)': 'N (số nhiều)', 'danh từ số ít': 'N (số ít)'
     }
+    
+    const getLemmaLabel = () => {
+        switch(lemma.type) {
+            case 'adj': return 'TÍNH TỪ';
+            case 'adv': return 'TRẠNG TỪ';
+            case 'noun': return 'DANH TỪ';
+            case 'prep': return 'GIỚI TỪ';
+            case 'conj': return 'LIÊN TỪ';
+            case 'verb':
+            default:
+                return 'ĐỘNG TỪ';
+        }
+    };
+
     return (
         <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
@@ -51,11 +162,11 @@ const SubjectVerbSelector: React.FC<{
                 </select>
              </div>
              <div className="flex items-center gap-2">
-                <label className="text-xs text-gray-500 font-bold uppercase">ĐỘNG TỪ</label>
+                <label className="text-xs text-gray-500 font-bold uppercase">{getLemmaLabel()}</label>
                 <input 
                     type="text" 
                     value={lemma.text}
-                    onChange={(e) => onLemmaChange({ ...lemma, text: e.target.value, base: e.target.value })}
+                    onChange={(e) => onLemmaChange({ ...lemma, text: e.target.value, base: e.target.value, vi: undefined })}
                     className="h-11 w-36 px-3 rounded-xl border border-gray-200 bg-white text-base shadow-sm focus:ring-2 focus:ring-indigo-500" 
                 />
              </div>
@@ -79,8 +190,8 @@ const HeroZone: React.FC<{ en: string; vi: string; debug: string; error: string 
     if (lemma.type !== 'verb' || !en) {
          return (
             <div className="text-center p-6 bg-white rounded-lg shadow-sm min-h-[180px] flex flex-col justify-center items-center">
-                <p className="text-5xl md:text-7xl font-bold text-gray-800 break-words">{en}</p>
-                <p className="text-xl text-gray-600 mt-4">{vi}</p>
+                <p className="text-4xl md:text-5xl font-bold text-gray-800 break-words">{en}</p>
+                <p className="text-lg text-gray-600 mt-4">{vi}</p>
                 <p className="text-xs text-gray-400 mt-4 absolute bottom-3 right-4">{debug}</p>
             </div>
         );
@@ -265,13 +376,17 @@ const CoreKnowledgeColumn: React.FC<{
     fontSize: number;
     onIncrease: () => void;
     onDecrease: () => void;
-}> = ({ unit, fontSize, onIncrease, onDecrease }) => {
+    onToggleFullScreen: () => void;
+}> = ({ unit, fontSize, onIncrease, onDecrease, onToggleFullScreen }) => {
     
     const controls = (
         <div className="flex items-center space-x-1">
             <button onClick={onDecrease} className="px-2 py-0.5 text-lg rounded-md hover:bg-gray-200 transition-colors">-</button>
             <span className="text-sm font-semibold w-6 text-center">{fontSize}</span>
             <button onClick={onIncrease} className="px-2 py-0.5 text-lg rounded-md hover:bg-gray-200 transition-colors">+</button>
+            <button onClick={onToggleFullScreen} className="p-1 rounded-md hover:bg-gray-200 transition-colors ml-2" title="Full Screen">
+                <ArrowsPointingOutIcon className="w-5 h-5 text-gray-600" />
+            </button>
         </div>
     );
     
@@ -298,6 +413,47 @@ const CoreKnowledgeColumn: React.FC<{
     );
 };
 
+const FullScreenCoreKnowledge: React.FC<{
+    isOpen: boolean;
+    onClose: () => void;
+    unit: Unit | null;
+    fontSize: number;
+    onIncrease: () => void;
+    onDecrease: () => void;
+}> = ({ isOpen, onClose, unit, fontSize, onIncrease, onDecrease }) => {
+    if (!isOpen) return null;
+
+    const controls = (
+        <div className="flex items-center space-x-2">
+            <button onClick={onDecrease} className="px-3 py-1 text-lg rounded-md hover:bg-gray-200 transition-colors">-</button>
+            <span className="text-sm font-semibold w-8 text-center">{fontSize}</span>
+            <button onClick={onIncrease} className="px-3 py-1 text-lg rounded-md hover:bg-gray-200 transition-colors">+</button>
+        </div>
+    );
+
+    return (
+        <div className="fixed inset-0 bg-white z-[60] p-4 sm:p-6 lg:p-8 flex flex-col">
+            <header className="flex-shrink-0 flex justify-between items-center mb-4 pb-4 border-b">
+                <h2 className="text-xl font-bold text-gray-800">{unit?.vi || 'Kiến Thức Cốt Lõi'}</h2>
+                <div className="flex items-center gap-4">
+                    {controls}
+                    <button onClick={onClose} className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-800 font-semibold rounded-lg hover:bg-gray-200 transition-colors">
+                        <XMarkIcon className="w-5 h-5" />
+                        Thu gọn
+                    </button>
+                </div>
+            </header>
+            <div 
+                className="flex-grow overflow-y-auto pr-4 -mr-4" 
+                style={{ scrollbarWidth: 'thin', fontSize: `${fontSize}px` }}
+            >
+                <CoreHost canonKey={unit?.canonKey} />
+            </div>
+        </div>
+    );
+};
+
+
 // --- Main Page ---
 const GrammarPage: React.FC = () => {
     const [selectedGroupId, setSelectedGroupId] = useState<number | null>(1);
@@ -305,9 +461,13 @@ const GrammarPage: React.FC = () => {
     const [compact, setCompact] = useState(false);
     const [coreFontSize, setCoreFontSize] = useState(16);
     
+    const [isVocabModalOpen, setIsVocabModalOpen] = useState(false);
+    const [activeVocabType, setActiveVocabType] = useState<string | null>(null);
+    const [isFullScreen, setIsFullScreen] = useState(false);
+
     const [_state, _setState] = useState<GrammarState>({
         subject: 'I',
-        lemma: { type: 'verb', text: 'work', base: 'work', past: 'worked', pp: 'worked', ing: 'working' },
+        lemma: { type: 'verb', text: 'work', base: 'work', past: 'worked', pp: 'worked', ing: 'working', vi: 'làm việc' },
         flags: {
             tense: 'present',
             aspect: 'simple',
@@ -334,7 +494,6 @@ const GrammarPage: React.FC = () => {
         _setState(prev => ({ ...prev, unitId: unit.id, flags: newFlags }));
     }, [_state.flags]);
 
-    // FIX: Refactored handleFlagChange to be more explicit and type-safe, resolving a TypeScript error.
     const handleFlagChange = <K extends keyof Flags>(key: K, value: Flags[K]) => {
         _setState(prev => {
             const flags = { ...prev.flags };
@@ -351,16 +510,8 @@ const GrammarPage: React.FC = () => {
                 if (val !== 'simple') {
                     flags.near_future = false;
                 }
-            } else if (key === 'tense') {
-                flags.tense = value as Flags['tense'];
-            } else if (key === 'voice') {
-                flags.voice = value as Flags['voice'];
-            } else if (key === 'polarity') {
-                flags.polarity = value as Flags['polarity'];
-            } else if (key === 'short_answer') {
-                flags.short_answer = value as boolean;
-            } else if (key === 'contractions') {
-                flags.contractions = value as boolean;
+            } else {
+                flags[key] = value;
             }
             
             return { ...prev, flags };
@@ -385,14 +536,86 @@ const GrammarPage: React.FC = () => {
         }
     }
 
+    const handleVocabButtonClick = (type: string) => {
+        setActiveVocabType(type);
+        setIsVocabModalOpen(true);
+    };
+
+    const handleVocabSelect = (item: VocabItem) => {
+        let newLemma: Lemma;
+        switch (activeVocabType) {
+            case 'Động từ':
+            case 'Động từ BQT':
+                newLemma = {
+                    type: 'verb',
+                    text: item.base || '',
+                    base: item.base,
+                    past: item.past,
+                    pp: item.pp,
+                    ing: item.ing,
+                    vi: item.vi,
+                };
+                break;
+            case 'Tính từ':
+                newLemma = { type: 'adj', text: item.word || '', vi: item.vi };
+                break;
+            case 'Trạng từ':
+                newLemma = { type: 'adv', text: item.word || '', vi: item.vi };
+                break;
+            case 'Danh từ':
+                 newLemma = { type: 'noun', text: (item.article ? `${item.article} ${item.word}` : item.word) || '', article: item.article, vi: item.vi };
+                break;
+            case 'Giới từ':
+                newLemma = { type: 'prep', text: item.word || '', vi: item.vi };
+                break;
+            case 'Liên từ':
+                newLemma = { type: 'conj', text: item.word || '', vi: item.vi };
+                break;
+            default:
+                newLemma = _state.lemma;
+        }
+        _setState(prev => ({ ...prev, lemma: newLemma }));
+    };
+
+    const getVocabPack = () => {
+        const typeMap: Record<string, keyof typeof vocab.packs> = {
+            'Động từ': 'verb',
+            'Động từ BQT': 'irregular',
+            'Tính từ': 'adj',
+            'Trạng từ': 'adv',
+            'Danh từ': 'noun_sg',
+            'Giới từ': 'prep',
+            'Liên từ': 'conj',
+        };
+        const key = activeVocabType ? typeMap[activeVocabType] : null;
+        return key ? vocab.packs[key] : [];
+    };
+
     const selectedUnit = units.find(u => u.id === _state.unitId);
 
     return (
         <div className="space-y-4 relative">
+            <VocabModal
+                isOpen={isVocabModalOpen}
+                onClose={() => setIsVocabModalOpen(false)}
+                wordType={activeVocabType || ''}
+                vocabPack={getVocabPack()}
+                onSelect={handleVocabSelect}
+            />
+            
+            <FullScreenCoreKnowledge
+                isOpen={isFullScreen}
+                onClose={() => setIsFullScreen(false)}
+                unit={selectedUnit || null}
+                fontSize={coreFontSize}
+                onIncrease={() => setCoreFontSize(s => s + 1)}
+                onDecrease={() => setCoreFontSize(s => Math.max(12, s - 1))}
+            />
+
             <div className="absolute top-[-24px] left-[-24px] right-[-24px] h-1.5 bg-teal-200" />
             
             <header className="grid grid-cols-[1fr_auto] gap-4 items-center">
-                <TopBar />
+                <TopBar onButtonClick={handleVocabButtonClick} activeType={activeVocabType} />
                 <SubjectVerbSelector 
                     subject={_state.subject} 
                     onSubjectChange={handleSubjectChange}
@@ -431,6 +654,7 @@ const GrammarPage: React.FC = () => {
                             fontSize={coreFontSize}
                             onIncrease={() => setCoreFontSize(s => s + 1)}
                             onDecrease={() => setCoreFontSize(s => Math.max(12, s - 1))}
+                            onToggleFullScreen={() => setIsFullScreen(true)}
                         />
                     </div>
                 )}

@@ -72,6 +72,15 @@ const getPronoun = (subject: Subject): string => {
     return subjectMap[subject];
 }
 
+const getPronounVI = (subject: Subject): string => {
+    const subjectMap = {
+        'I': 'Tôi', 'you': 'Bạn', 'we': 'Chúng tôi', 'they': 'Họ', 'he': 'Anh ấy', 'she': 'Cô ấy', 'it': 'Nó',
+        'N (số nhiều)': 'Các sinh viên',
+        'danh từ số ít': 'Sinh viên'
+    };
+    return subjectMap[subject];
+};
+
 const mapSubjectToPronoun = (s: Subject): Pronoun => {
     switch (s) {
         case 'I': return 'I';
@@ -265,6 +274,114 @@ export function generateShortAnswer(args: {
   return `${header} ${word}.`;
 }
 
+const generateVietnameseSentence = (state: GrammarState): string => {
+    const { subject, lemma, flags } = state;
+    const pronounVI = getPronounVI(subject);
+    const lemmaVI = lemma.vi || lemma.text;
+
+    // --- Part 1: Handle non-verb lemmas ---
+    if (lemma.type !== 'verb') {
+        const tenseMap = { present: '', past: 'đã', future: 'sẽ' };
+        const tenseVI = tenseMap[flags.tense] || '';
+        let sentence = '';
+
+        if (lemma.type === 'adj') {
+            switch (flags.polarity) {
+                case 'affirmative': sentence = `${pronounVI} ${tenseVI} ${lemmaVI}.`; break;
+                case 'negative': sentence = `${pronounVI} ${tenseVI} không ${lemmaVI}.`; break;
+                case 'interrogative': sentence = `${pronounVI} có ${tenseVI} ${lemmaVI} không?`; break;
+            }
+        } else if (lemma.type === 'noun') {
+            switch (flags.polarity) {
+                case 'affirmative': sentence = `${pronounVI} ${tenseVI} là ${lemmaVI}.`; break;
+                case 'negative': sentence = `${pronounVI} ${tenseVI} không phải là ${lemmaVI}.`; break;
+                case 'interrogative': sentence = `${pronounVI} có phải ${tenseVI} là ${lemmaVI} không?`; break;
+            }
+        } else { // Fallback for prep, conj, adv
+            switch (flags.polarity) {
+                case 'affirmative': sentence = `${pronounVI} ${tenseVI} ${lemmaVI}.`; break;
+                case 'negative': sentence = `${pronounVI} ${tenseVI} không ${lemmaVI}.`; break;
+                case 'interrogative': sentence = `${pronounVI} có ${tenseVI} ${lemmaVI} không?`; break;
+            }
+        }
+        return `(Dịch mẫu) ${sentence.replace(/\s+/g, ' ').trim()}`;
+    }
+
+    // --- Part 2: Handle verb lemmas with a template map ---
+    const { tense, aspect, voice, polarity } = flags;
+    const key = `${tense}-${aspect}-${voice}-${polarity}`;
+    
+    const templates: { [key: string]: string } = {
+        // Present Simple
+        'present-simple-active-affirmative': '{S} {V}.',
+        'present-simple-active-negative': '{S} không {V}.',
+        'present-simple-active-interrogative': '{S} có {V} không?',
+        'present-simple-passive-affirmative': '{S} được {V}.',
+        'present-simple-passive-negative': '{S} không được {V}.',
+        'present-simple-passive-interrogative': '{S} có được {V} không?',
+        // Present Progressive
+        'present-progressive-active-affirmative': '{S} đang {V}.',
+        'present-progressive-active-negative': '{S} không đang {V}.',
+        'present-progressive-active-interrogative': '{S} có đang {V} không?',
+        'present-progressive-passive-affirmative': '{S} đang được {V}.',
+        // Present Perfect
+        'present-perfect-active-affirmative': '{S} đã {V}.',
+        'present-perfect-active-negative': '{S} chưa {V}.',
+        'present-perfect-active-interrogative': '{S} đã {V} chưa?',
+        'present-perfect-passive-affirmative': '{S} đã được {V}.',
+        // Present Perfect Progressive
+        'present-perfect_progressive-active-affirmative': '{S} đã và đang {V}.',
+
+        // Past Simple
+        'past-simple-active-affirmative': '{S} đã {V}.',
+        'past-simple-active-negative': '{S} đã không {V}.',
+        'past-simple-active-interrogative': '{S} có phải đã {V} không?',
+        'past-simple-passive-affirmative': '{S} đã được {V}.',
+        // Past Progressive
+        'past-progressive-active-affirmative': '{S} đã đang {V}.',
+        'past-progressive-passive-affirmative': '{S} đã đang được {V}.',
+        // Past Perfect
+        'past-perfect-active-affirmative': '{S} đã {V} (trước đó).',
+        'past-perfect-passive-affirmative': '{S} đã được {V} (trước đó).',
+        // Past Perfect Progressive
+        'past-perfect_progressive-active-affirmative': '{S} đã liên tục {V}.',
+
+        // Future Simple
+        'future-simple-active-affirmative': '{S} sẽ {V}.',
+        'future-simple-active-negative': '{S} sẽ không {V}.',
+        'future-simple-active-interrogative': '{S} sẽ {V} chứ?',
+        'future-simple-passive-affirmative': '{S} sẽ được {V}.',
+        // Future Progressive
+        'future-progressive-active-affirmative': '{S} sẽ đang {V}.',
+        // Future Perfect
+        'future-perfect-active-affirmative': '{S} sẽ đã {V} xong.',
+        'future-perfect-passive-affirmative': '{S} sẽ đã được {V} xong.',
+        // Future Perfect Progressive
+        'future-perfect_progressive-active-affirmative': '{S} sẽ đã liên tục {V}.',
+    };
+
+    let template = templates[key] || '{S} {V}.'; // Default fallback
+
+    if (flags.near_future) {
+        if (voice === 'active') {
+             switch (polarity) {
+                case 'affirmative': template = '{S} sẽ {V}.'; break;
+                case 'negative': template = '{S} sẽ không {V}.'; break;
+                case 'interrogative': template = '{S} sẽ {V} chứ?'; break;
+            }
+        } else { // passive
+             switch (polarity) {
+                case 'affirmative': template = '{S} sẽ được {V}.'; break;
+                case 'negative': template = '{S} sẽ không được {V}.'; break;
+                case 'interrogative': template = '{S} sẽ được {V} chứ?'; break;
+            }
+        }
+    }
+    
+    const result = template.replace('{S}', pronounVI).replace('{V}', lemmaVI);
+    return `(Dịch mẫu) ${result.replace(/\s+/g, ' ').trim()}`;
+};
+
 
 // --- Main Service Functions ---
 
@@ -351,17 +468,67 @@ export const generateSentence = (state: GrammarState): { en: string; vi: string;
         const vi = answerPolarity === 'affirmative' ? `(Dịch mẫu) Vâng, đúng vậy.` : `(Dịch mẫu) Không, không phải.`;
         return { en, vi, error: null };
     }
-    
-    if (lemma.type !== 'verb') {
-        const pronoun = getPronoun(subject);
-        const be = isThirdPersonSingular(subject) ? 'is' : (subject === 'I' ? 'am' : 'are');
-        return {
-            en: `${pronoun.charAt(0).toUpperCase() + pronoun.slice(1)} ${be} ${lemma.text}.`,
-            vi: `(Dịch mẫu) ${pronoun} là/thì ${lemma.text}.`,
-            error: null
+
+    if (lemma.type === 'conj') {
+        let exampleEn = 'I like tea and he likes coffee.';
+        let exampleVi = '(Ví dụ) Tôi thích trà và anh ấy thích cà phê.';
+        switch(lemma.text) {
+            case 'but':
+                exampleEn = 'I like tea, but he likes coffee.';
+                exampleVi = '(Ví dụ) Tôi thích trà, nhưng anh ấy thích cà phê.';
+                break;
+            case 'so':
+                exampleEn = 'He was tired, so he went to bed.';
+                exampleVi = '(Ví dụ) Anh ấy mệt, vì vậy anh ấy đã đi ngủ.';
+                break;
+            case 'because':
+                exampleEn = 'He went to bed because he was tired.';
+                exampleVi = '(Ví dụ) Anh ấy đi ngủ vì anh ấy mệt.';
+                break;
+            case 'although':
+                exampleEn = 'Although it was raining, we went for a walk.';
+                exampleVi = '(Ví dụ) Mặc dù trời mưa, chúng tôi vẫn đi dạo.';
+                break;
         }
+        return { en: exampleEn, vi: exampleVi, error: null };
     }
     
+    // Fallback for non-verb types to generate EN sentence
+     if (lemma.type !== 'verb') {
+        const pronoun = getPronoun(subject);
+        const is3rdSg = isThirdPersonSingular(subject);
+        let be: string;
+       
+        if (flags.tense === 'present') {
+            be = subject === 'I' ? 'am' : is3rdSg ? 'is' : 'are';
+        } else if (flags.tense === 'past') {
+            be = (subject === 'I' || is3rdSg) ? 'was' : 'were';
+        } else { // future
+            be = 'will be';
+        }
+        
+        let enSentence = '';
+      
+        if (flags.polarity === 'affirmative') {
+            enSentence = `${pronoun.charAt(0).toUpperCase() + pronoun.slice(1)} ${be} ${lemma.text}.`;
+        } else if (flags.polarity === 'negative') {
+            const beParts = be.split(' ');
+            enSentence = `${pronoun.charAt(0).toUpperCase() + pronoun.slice(1)} ${beParts[0]} not ${beParts.slice(1).join(' ')} ${lemma.text}.`;
+        } else { // interrogative
+            const beParts = be.split(' ');
+            const capitalizedBe = beParts[0].charAt(0).toUpperCase() + beParts[0].slice(1);
+            enSentence = `${capitalizedBe} ${pronoun} ${beParts.slice(1).join(' ')} ${lemma.text}?`;
+        }
+        
+        const vi = generateVietnameseSentence(state);
+        return {
+            en: enSentence.replace(/\s+/g, ' ').trim(),
+            vi: vi,
+            error: null
+        };
+    }
+
+    // --- Generate EN and VI for VERBS ---
     const { aux, mainVerb, verbForm } = getAuxiliary(state);
     const pronoun = getPronoun(subject);
     
@@ -382,10 +549,9 @@ export const generateSentence = (state: GrammarState): { en: string; vi: string;
             break;
     }
 
-    // Basic Vietnamese translation
-    const vi = `(Dịch mẫu) ${pronoun} ${flags.tense === 'past' ? 'đã' : (flags.aspect === 'progressive' ? 'đang' : '')} ${lemma.text}.`;
+    const vi = generateVietnameseSentence(state);
 
-    return { en: en.replace(/\s+/g, ' ').trim(), vi, error: null };
+    return { en: en.replace(/\s+/g, ' ').trim(), vi: vi.replace(/\s+/g, ' ').trim(), error: null };
 };
 
 // === Short-form (contractions) helper ===============================

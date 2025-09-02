@@ -113,9 +113,9 @@ const GERUND_TOKENS: Token[] = [
   { id:'ger-write', type:'GER', vi:'danh động từ (viết)', en:'writing', keywords:['gerund','ving','viết','write'] },
 ];
 
-export const TOKENS: Token[] = [
-  ...GERUND_TOKENS,
-  // Articles & Determiners
+// ===== NEW TOKEN SETS =====
+
+const ARTICLE_TOKENS: Token[] = [
   { id:'art-a',   type:'ART', vi:'mạo từ (a/an)', en:'a',  keywords:['mạo','article','a','an'], constraint: 'singular' },
   { id:'art-the', type:'ART', vi:'mạo từ (the)',  en:'the',keywords:['mạo','article','the','đích danh'] },
   { id:'art-zero',type:'ART', vi:'mạo từ rỗng (Ø)', en:'', keywords:['mạo','rỗng', 'zero', 'không mạo từ']},
@@ -123,32 +123,82 @@ export const TOKENS: Token[] = [
   { id:'art-that',type:'ART', vi:'chỉ định (that)', en:'that', keywords:['chỉ định', 'that', 'đó', 'kia'], constraint: 'singular'},
   { id:'art-these',type:'ART', vi:'chỉ định (these)', en:'these', keywords:['chỉ định', 'these', 'những này'], constraint: 'plural'},
   { id:'art-those',type:'ART', vi:'chỉ định (those)', en:'those', keywords:['chỉ định', 'those', 'những đó', 'những kia'], constraint: 'plural'},
-
-  // Quantifiers
   { id:'quant-many', type:'ART', vi:'lượng (many)', en:'many', keywords:['lượng', 'nhiều', 'many'], constraint: 'plural'},
   { id:'quant-much', type:'ART', vi:'lượng (much)', en:'much', keywords:['lượng', 'nhiều', 'much'], constraint: 'uncountable'},
   { id:'quant-few', type:'ART', vi:'lượng (few)', en:'few', keywords:['lượng', 'ít', 'few'], constraint: 'plural'},
   { id:'quant-little', type:'ART', vi:'lượng (little)', en:'little', keywords:['lượng', 'ít', 'little'], constraint: 'uncountable'},
   { id:'quant-a-few', type:'ART', vi:'lượng (a few)', en:'a few', keywords:['lượng', 'một vài', 'a few'], constraint: 'plural'},
   { id:'quant-a-little', type:'ART', vi:'lượng (a little)', en:'a little', keywords:['lượng', 'một chút', 'a little'], constraint: 'uncountable'},
-  
-  // Adverbs of Degree
-  { id:'adv-very', type:'ADV', vi:'trạng (rất)', en:'very', keywords:['trạng','rất','very','degree'] },
-
-  // Adjectives with categories
-  { id:'adj-big',       type:'ADJ', vi:'tính (to/lớn)', en:'big',       keywords:['tính','to','lớn','big'], category: 'size' },
-  { id:'adj-handsome',  type:'ADJ', vi:'tính (đẹp trai)', en:'handsome', keywords:['tính','đẹp trai','handsome'], category: 'opinion' },
-  { id:'adj-beautiful', type:'ADJ', vi:'tính (đẹp)', en:'beautiful', keywords:['tính','đẹp','beautiful'], category: 'opinion' },
-  { id:'adj-old',       type:'ADJ', vi:'tính (cũ/già)', en:'old', keywords:['tính','cũ', 'già', 'old'], category: 'age'},
-  { id:'adj-red',       type:'ADJ', vi:'tính (đỏ)', en:'red', keywords:['tính','đỏ', 'red'], category: 'color'},
-
-
-  // Nouns with countability
-  { id:'n-man',   type:'N', vi:'danh (người đàn ông)', en:'man',   keywords:['danh','người đàn ông','man'], countability: 'C', irregularPlural: 'men' },
-  { id:'n-woman', type:'N', vi:'danh (người phụ nữ)',  en:'woman', keywords:['danh','người phụ nữ','woman'], countability: 'C', irregularPlural: 'women' },
-  { id:'n-apple', type:'N', vi:'danh (quả táo)',       en:'apple', keywords:['danh','quả táo','apple'], countability: 'C' },
-  { id:'n-information', type:'N', vi:'danh (thông tin)', en:'information', keywords:['danh','thông tin', 'information'], countability: 'U'},
 ];
+
+const NOUN_TOKENS: Token[] = [
+    { id:'n-man',   type:'N', vi:'danh (người đàn ông)', en:'man',   keywords:['danh','người đàn ông','man'], countability: 'C', irregularPlural: 'men' },
+    { id:'n-woman', type:'N', vi:'danh (người phụ nữ)',  en:'woman', keywords:['danh','người phụ nữ','woman'], countability: 'C', irregularPlural: 'women' },
+    { id:'n-apple', type:'N', vi:'danh (quả táo)',       en:'apple', keywords:['danh','quả táo','apple'], countability: 'C' },
+    { id:'n-information', type:'N', vi:'danh (thông tin)', en:'information', keywords:['danh','thông tin', 'information'], countability: 'U'},
+    { id:'n-student', type:'N', vi:'danh (học sinh)', en:'student', keywords:['danh','học sinh', 'student'], countability: 'C' },
+    { id:'n-water', type:'N', vi:'danh (nước)', en:'water', keywords:['danh','nước', 'water'], countability: 'U' },
+    { id:'n-book', type:'N', vi:'danh (sách)', en:'book', keywords:['danh','sách', 'book'], countability: 'C' },
+    { id:'n-advice', type:'N', vi:'danh (lời khuyên)', en:'advice', keywords:['danh','lời khuyên', 'advice'], countability: 'U' },
+    { id:'n-car', type:'N', vi:'danh (xe hơi)', en:'car', keywords:['danh','xe hơi', 'car'], countability: 'C' },
+    { id:'n-money', type:'N', vi:'danh (tiền)', en:'money', keywords:['danh','tiền', 'money'], countability: 'U' },
+    { id:'n-child', type:'N', vi:'danh (đứa trẻ)', en:'child', keywords:['danh','đứa trẻ', 'child'], countability: 'C', irregularPlural: 'children' },
+    { id:'n-music', type:'N', vi:'danh (âm nhạc)', en:'music', keywords:['danh','âm nhạc', 'music'], countability: 'U' },
+];
+
+const ADJECTIVE_TOKENS: Token[] = [
+    { id:'adj-big',       type:'ADJ', vi:'tính (to/lớn)', en:'big',       keywords:['tính','to','lớn','big'], category: 'size' },
+    { id:'adj-handsome',  type:'ADJ', vi:'tính (đẹp trai)', en:'handsome', keywords:['tính','đẹp trai','handsome'], category: 'opinion' },
+    { id:'adj-beautiful', type:'ADJ', vi:'tính (đẹp)', en:'beautiful', keywords:['tính','đẹp','beautiful'], category: 'opinion' },
+    { id:'adj-old',       type:'ADJ', vi:'tính (cũ/già)', en:'old', keywords:['tính','cũ', 'già', 'old'], category: 'age'},
+    { id:'adj-red',       type:'ADJ', vi:'tính (đỏ)', en:'red', keywords:['tính','đỏ', 'red'], category: 'color'},
+    { id:'adj-good',      type:'ADJ', vi:'tính (tốt)', en:'good', keywords:['tính','tốt', 'good'], category: 'opinion' },
+    { id:'adj-bad',       type:'ADJ', vi:'tính (tệ)', en:'bad', keywords:['tính','tệ', 'bad'], category: 'opinion' },
+    { id:'adj-happy',     type:'ADJ', vi:'tính (hạnh phúc)', en:'happy', keywords:['tính','hạnh phúc', 'happy'], category: 'opinion' },
+    { id:'adj-sad',       type:'ADJ', vi:'tính (buồn)', en:'sad', keywords:['tính','buồn', 'sad'], category: 'opinion' },
+    { id:'adj-new',       type:'ADJ', vi:'tính (mới)', en:'new', keywords:['tính','mới', 'new'], category: 'age' },
+    { id:'adj-young',     type:'ADJ', vi:'tính (trẻ)', en:'young', keywords:['tính','trẻ', 'young'], category: 'age' },
+    { id:'adj-boring',    type:'ADJ', vi:'tính (nhàm chán -ing)', en:'boring', keywords:['tính','nhàm chán', 'boring'], category: 'opinion' },
+    { id:'adj-bored',     type:'ADJ', vi:'tính (buồn chán -ed)', en:'bored', keywords:['tính','buồn chán', 'bored'], category: 'opinion' },
+    { id:'adj-interesting', type:'ADJ', vi:'tính (thú vị -ing)', en:'interesting', keywords:['tính','thú vị', 'interesting'], category: 'opinion' },
+    { id:'adj-interested', type:'ADJ', vi:'tính (thích thú -ed)', en:'interested', keywords:['tính','thích thú', 'interested'], category: 'opinion' },
+];
+
+const ADVERB_TOKENS: Token[] = [
+    { id:'adv-very', type:'ADV', vi:'trạng (rất)', en:'very', keywords:['trạng','rất','very','degree'] },
+    { id:'adv-quickly', type:'ADV', vi:'trạng (nhanh chóng)', en:'quickly', keywords:['trạng','nhanh', 'quickly'] },
+    { id:'adv-slowly', type:'ADV', vi:'trạng (chậm)', en:'slowly', keywords:['trạng','chậm', 'slowly'] },
+    { id:'adv-always', type:'ADV', vi:'trạng (luôn luôn)', en:'always', keywords:['trạng','luôn luôn', 'always'] },
+    { id:'adv-never', type:'ADV', vi:'trạng (không bao giờ)', en:'never', keywords:['trạng','không bao giờ', 'never'] },
+];
+
+const PREPOSITION_TOKENS: Token[] = [
+    { id:'prep-in', type:'PREP', vi:'giới (trong)', en:'in', keywords:['giới','trong', 'in'] },
+    { id:'prep-on', type:'PREP', vi:'giới (trên)', en:'on', keywords:['giới','trên', 'on'] },
+    { id:'prep-at', type:'PREP', vi:'giới (tại)', en:'at', keywords:['giới','tại', 'at'] },
+    { id:'prep-for', type:'PREP', vi:'giới (cho)', en:'for', keywords:['giới','cho', 'for'] },
+    { id:'prep-with', type:'PREP', vi:'giới (với)', en:'with', keywords:['giới','với', 'with'] },
+    { id:'prep-of', type:'PREP', vi:'giới (của)', en:'of', keywords:['giới','của', 'of'] },
+];
+
+const CONJUNCTION_TOKENS: Token[] = [
+    { id:'conj-and', type:'CONJ', vi:'liên (và)', en:'and', keywords:['liên','và', 'and'] },
+    { id:'conj-but', type:'CONJ', vi:'liên (nhưng)', en:'but', keywords:['liên','nhưng', 'but'] },
+    { id:'conj-or', type:'CONJ', vi:'liên (hoặc)', en:'or', keywords:['liên','hoặc', 'or'] },
+    { id:'conj-so', type:'CONJ', vi:'liên (vì vậy)', en:'so', keywords:['liên','vì vậy', 'so'] },
+    { id:'conj-because', type:'CONJ', vi:'liên (bởi vì)', en:'because', keywords:['liên','bởi vì', 'because'] },
+];
+
+export const TOKENS: Token[] = [
+  ...GERUND_TOKENS,
+  ...ARTICLE_TOKENS,
+  ...NOUN_TOKENS,
+  ...ADJECTIVE_TOKENS,
+  ...ADVERB_TOKENS,
+  ...PREPOSITION_TOKENS,
+  ...CONJUNCTION_TOKENS
+];
+
 
 // ====== Search Helpers ==============================================
 export const SUGGESTIONS = [

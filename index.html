@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -33,9 +32,17 @@
         scrollbar-width: thin;
         scrollbar-color: rgba(0,0,0,.12) transparent;
     }
+    @keyframes gradient-animation {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    .animate-gradient {
+        animation: gradient-animation 6s ease infinite;
+    }
 </style>
 </head>
-  <body class="bg-gray-50 text-gray-900">
+  <body class="bg-slate-50 text-gray-900">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

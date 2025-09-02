@@ -4,31 +4,26 @@ import React, { useState } from 'react';
 type Chip = { label: string; formula: string; colors: string };
 const FormulaChip: React.FC<Chip> = ({ label, formula, colors }) => {
   const [copied, setCopied] = useState(false);
-  const copy = async () => {
-    try { await navigator.clipboard.writeText(formula); setCopied(true); setTimeout(()=>setCopied(false), 1200); } catch {}
-  };
+  const copy = async () => { try { await navigator.clipboard.writeText(formula); setCopied(true); setTimeout(()=>setCopied(false), 1200);} catch {} };
   return (
     <button
       onClick={copy}
       title={`Copy: ${formula}`}
       className={[
-        'group relative w-full min-w-0 px-4 py-3 rounded-2xl',
-        'text-white font-extrabold shadow-lg transition-[transform,box-shadow] active:scale-95',
-        'ring-1 ring-white/20 bg-gradient-to-r', colors,
+        'group relative w-full min-w-0 px-4 py-3 rounded-2xl text-white font-extrabold shadow-lg',
+        'transition-[transform,box-shadow] active:scale-95 ring-1 ring-white/20',
+        'bg-gradient-to-r', colors,
         'flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 text-left'
       ].join(' ')}
     >
       <span className="truncate">{label}</span>
       <span className="hidden sm:inline ml-2 text-white/85 font-semibold">({formula})</span>
       <span className="sm:hidden text-white/85 font-semibold text-xs leading-tight">({formula})</span>
-      {copied && (
-        <span className="absolute -top-2 -right-2 text-[10px] px-2 py-0.5 rounded-full bg-black/70">Copied!</span>
-      )}
+      {copied && <span className="absolute -top-2 -right-2 text-[10px] px-2 py-0.5 rounded-full bg-black/70">Copied!</span>}
     </button>
   );
 };
 
-// Reusing the Section component
 const Section: React.FC<{id:string; title:string; emoji?:string; children: React.ReactNode}> = ({id,title,emoji,children}) => (
   <section id={id} className="scroll-mt-28">
     <h2 className="mt-10 text-2xl md:text-3xl font-extrabold tracking-tight">
@@ -45,12 +40,11 @@ export default function CorePassivePastContinuous() {
     <div className="font-[Inter,ui-sans-serif]">
       {/* HERO */}
       <div className="rounded-3xl p-6 md:p-8 border border-black/10 bg-white shadow-sm">
-        {/* Fix: Corrected Tailwind CSS typo */}
         <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
         ⚙️ <span className="underline decoration-4 decoration-amber-400">BỊ ĐỘNG QK TIẾP DIỄN</span> — <i>Passive (Past Continuous)</i>
         </h1>
         <p className="mt-2 text-gray-700">
-          Dùng để diễn tả một hành động <b>đang được thực hiện</b> tại một thời điểm cụ thể trong quá khứ, hoặc khi một hành động khác xen vào.
+          Dùng để diễn tả một hành động <b>đang được thực hiện</b> tại một thời điểm cụ thể trong quá khứ, nhấn mạnh vào đối tượng chịu tác động.
         </p>
 
         {/* FORMULA CHIPS */}
@@ -79,18 +73,14 @@ export default function CorePassivePastContinuous() {
             Thể bị động của thì Quá khứ Tiếp diễn được dùng để mô tả một hành động đang trong quá trình diễn ra tại một thời điểm xác định trong quá khứ.
         </p>
         <ul className="list-disc pl-6 space-y-2 mt-2">
-            <li><b>Hành động đang diễn ra tại một thời điểm cụ thể trong quá khứ:</b>
-                <br/><i>e.g., At 10 PM last night, the documents <b>were being printed</b>.</i>
-            </li>
-            <li><b>Hành động đang diễn ra thì bị một hành động khác xen vào:</b>
-                <br/><i>e.g., The road <b>was being repaired</b> when the accident happened.</i>
-            </li>
+            <li><i>At 10 PM last night, a movie <b>was being watched</b> by millions of people.</i> (Bộ phim đang được xem).</li>
+            <li><i>The road was closed because it <b>was being repaired</b>.</i> (Con đường đang được sửa chữa).</li>
         </ul>
       </Section>
 
       <Section id="form" title="Công thức & Cấu trúc" emoji="🔧">
         <p>
-            Tương tự thì Hiện tại Tiếp diễn Bị động, điểm mấu chốt là sự có mặt của <b>"being"</b> sau "was/were".
+            Điểm mấu chốt của thì này là sự có mặt của <b>"being"</b> sau "was/were" và trước V3.
         </p>
         <div className="rounded-xl p-4 bg-blue-50 border border-blue-200">
             <p className="font-bold text-blue-700">Công thức:</p>
@@ -99,7 +89,8 @@ export default function CorePassivePastContinuous() {
         <ul className="list-disc pl-6 mt-2">
             <li>I/He/She/It + <b>was being</b> + V3</li>
             <li>You/We/They + <b>were being</b> + V3</li>
-            <li><i>e.g., The bank <b>was being robbed</b> when the police arrived.</i></li>
+            <li><i>e.g., A new stadium <b>was being built</b> at that time.</i></li>
+            <li><i>e.g., The suspect <b>was being questioned</b> by the police.</i></li>
         </ul>
       </Section>
       
@@ -116,8 +107,8 @@ export default function CorePassivePastContinuous() {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td className="border p-2"><u>The chef</u> was preparing the meal.</td><td className="border p-2"><u>The meal</u> was being prepared by the chef.</td></tr>
-                    <tr className="bg-gray-50"><td className="border p-2"><u>They</u> were discussing the new plan.</td><td className="border p-2"><u>The new plan</u> was being discussed.</td></tr>
+                    <tr><td className="border p-2"><u>The workers</u> were repairing the bridge.</td><td className="border p-2"><u>The bridge</u> was being repaired by the workers.</td></tr>
+                    <tr className="bg-gray-50"><td className="border p-2"><u>Someone</u> was following me.</td><td className="border p-2"><u>I</u> was being followed.</td></tr>
                 </tbody>
             </table>
         </div>
@@ -125,17 +116,17 @@ export default function CorePassivePastContinuous() {
 
       <Section id="pitfalls" title="Lỗi thường gặp" emoji="⚠️">
         <ol className="list-decimal pl-6">
-          <li><b>Quên "being":</b> (❌ <i className="line-through">The house was built when I arrived.</i> → Ngụ ý ngôi nhà được xây xong ngay lúc tôi đến).</li>
-          <li><b>Chia sai "was/were":</b> (❌ <i className="line-through">The cars was being repaired.</i>)</li>
+          <li><b>Quên "being":</b> (❌ <i className="line-through">The house was built when I arrived.</i> - câu này nghĩa là nhà đã được xây xong, khác với "đang được xây").</li>
+          <li><b>Chia sai "was/were":</b> (❌ <i className="line-through">The cars was being washed.</i>)</li>
+          <li><b>Dùng sai V3:</b> (❌ <i className="line-through">The food was being cook.</i> → ✅ ...was being <b>cooked</b>.)</li>
         </ol>
       </Section>
 
       <Section id="examples" title="Ví dụ (EN–VI)" emoji="📝">
         <ol className="list-decimal pl-6 space-y-2">
-          <li><b>A new bridge was being constructed when I visited my hometown.</b> — Một cây cầu mới đang được xây dựng khi tôi về thăm quê.</li>
-          <li><b>The suspect was being interrogated when his lawyer arrived.</b> — Nghi phạm đang bị thẩm vấn thì luật sư của anh ta đến.</li>
-          <li><b>What was being done about the water leak?</b> — Người ta đã đang làm gì về vụ rò rỉ nước vậy?</li>
-          <li><b>The food wasn't being served yet, so we had to wait.</b> — Thức ăn vẫn chưa được phục vụ, vì vậy chúng tôi phải đợi.</li>
+          <li><b>The road couldn't be used because it was being resurfaced.</b> — Con đường không thể sử dụng được vì nó đang được làm lại mặt đường.</li>
+          <li><b>When I walked into the office, the computers were being installed.</b> — Khi tôi bước vào văn phòng, những chiếc máy tính đang được cài đặt.</li>
+          <li><b>Was the patient being monitored when the alarm went off?</b> — Bệnh nhân có đang được theo dõi khi chuông báo reo không?</li>
         </ol>
       </Section>
 
@@ -143,12 +134,12 @@ export default function CorePassivePastContinuous() {
         <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
           <p className="font-semibold">Chuyển các câu chủ động sau sang câu bị động:</p>
           <ol className="list-decimal pl-6 mt-2 space-y-2">
-            <li>The staff were decorating the room for the party.
-            <br/>→ The room ____________________________________________.</li>
-            <li>Someone was following me last night.
-            <br/>→ I ____________________________________________________.</li>
-            <li>Were they fixing your car at 5 PM?
-            <br/>→ Was your car _________________________________________?</li>
+            <li>They were discussing the new plan when I came in.
+            <br/>→ The new plan __________________________________________.</li>
+            <li>Someone was cleaning the windows.
+            <br/>→ The windows ___________________________________________.</li>
+            <li>The firefighters were trying to put out the fire.
+            <br/>→ The fire ______________________________________________.</li>
           </ol>
         </div>
       </Section>

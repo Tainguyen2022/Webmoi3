@@ -20,7 +20,8 @@ const FormulaChip: React.FC<Chip> = ({ label, formula, colors }) => {
     >
       <span className="truncate">{label}</span>
       <span className="hidden sm:inline ml-2 text-white/85 font-semibold">({formula})</span>
-      <span className="sm-hidden text-white/85 font-semibold text-xs leading-tight">({formula})</span>
+      {/* Fix: Corrected Tailwind CSS typo from sm-hidden to sm:hidden */}
+      <span className="sm:hidden text-white/85 font-semibold text-xs leading-tight">({formula})</span>
       {copied && (
         <span className="absolute -top-2 -right-2 text-[10px] px-2 py-0.5 rounded-full bg-black/70">Copied!</span>
       )}
