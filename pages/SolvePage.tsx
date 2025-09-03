@@ -20,8 +20,7 @@ import {
   removeDiacritics,
   isPatternInCurrentGrammar,
 } from "../services/solveService";
-
-const ADMIN_PASSWORD = "MCB01111110";
+import { ADMIN_PASSWORD } from "../constants";
 
 function classNames(...xs: (string | false | undefined)[]) {
   return xs.filter(Boolean).join(" ");
@@ -88,6 +87,41 @@ function Highlight({ text, query }: { text: string; query: string }) {
   );
 }
 
+const PasswordGate: React.FC<{ onUnlock: () => void }> = ({ onUnlock }) => {
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (password === ADMIN_PASSWORD) {
+            onUnlock();
+        } else {
+            setError('Sai mật khẩu!');
+        }
+    };
+
+    return (
+        <div className="p-8">
+            <h3 className="text-2xl font-bold text-center mb-4">Admin Area</h3>
+            <form onSubmit={handleSubmit} className="max-w-sm mx-auto">
+                <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => { setPassword(e.target.value); setError(''); }}
+                    placeholder="Nhập mật khẩu"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-xl"
+                    autoFocus
+                />
+                {error && <p className="text-red-500 text-lg mt-2 text-center">{error}</p>}
+                <button type="submit" className="mt-4 w-full bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700 transition-colors text-xl">
+                    Đăng nhập
+                </button>
+            </form>
+        </div>
+    );
+};
+
+
 export default function SolvePage() {
   const { db, setDb, hardReset } = useDBState();
   const [q, setQ] = useState("");
@@ -142,19 +176,7 @@ export default function SolvePage() {
 
           <button
             className="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-lg hover:bg-slate-100"
-            onClick={() => {
-              if (!authed) {
-                const pw = prompt("Nhập mật khẩu quản trị");
-                if (pw === ADMIN_PASSWORD) {
-                  setAuthed(true);
-                  setAdminOpen(true);
-                } else if (pw !== null) {
-                  alert("Sai mật khẩu.");
-                }
-              } else {
-                setAdminOpen(true);
-              }
-            }}
+            onClick={() => setAdminOpen(true)}
             title="Quản trị"
           >
             <span className="text-xl">🔧</span>
@@ -291,368 +313,367 @@ export default function SolvePage() {
           />
           <div className="absolute inset-0 flex items-center justify-center p-4">
             <div className="w-full max-w-6xl bg-white rounded-2xl shadow-2xl overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-3 border-b">
-                <h2 className="font-semibold text-xl">Quản trị “Giải đề”</h2>
-                <button
-                  className="rounded-lg border border-slate-300 px-3 py-1.5 text-lg hover:bg-slate-100"
-                  onClick={() => setAdminOpen(false)}
-                >
-                  Đóng
-                </button>
-              </div>
-
-              {!authed ? (
-                <div className="p-6 text-slate-600 text-xl">
-                  Bạn chưa đăng nhập. Đóng và bấm 🔧 ở header để nhập mật khẩu.
-                </div>
-              ) : (
-                <div className="grid grid-cols-12 gap-0">
-                  {/* Sidebar */}
-                  <aside className="col-span-4 border-r p-4 max-h-[75vh] overflow-auto">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-lg font-medium text-slate-800">
-                        Categories ({db.categories.length})
-                      </h3>
-                      <button
-                        className="text-lg rounded-lg border border-slate-300 px-2 py-1 hover:bg-slate-50"
-                        onClick={() => {
-                          const id = prompt("Nhập id (không dấu, duy nhất)");
-                          const title = id
-                            ? prompt("Tên hiển thị (vi):")
-                            : null;
-                          if (!id || !title) return;
-                          try {
-                            const next = addCategory(db, {
-                              id,
-                              title_vi: title,
-                              synonyms: [],
-                              patterns: [],
-                            });
-                            setDb(next);
-                            setSelectedCatId(id);
-                          } catch (e: any) {
-                            alert(e?.message || "Lỗi thêm category");
-                          }
-                        }}
-                      >
-                        + Thêm
-                      </button>
-                    </div>
-
-                    <ul className="space-y-1">
-                      {db.categories.map((c) => (
-                        <li key={c.id}>
-                          <button
-                            onClick={() => setSelectedCatId(c.id)}
-                            className={classNames(
-                              "w-full text-left px-3 py-2 rounded-lg border",
-                              selectedCatId === c.id
-                                ? "bg-blue-50 border-blue-200 text-blue-800"
-                                : "bg-white border-slate-200 hover:bg-slate-50"
-                            )}
-                          >
-                            <div className="font-medium text-lg">{c.title_vi}</div>
-                            <div className="text-base text-slate-500">
-                              {c.id} • {c.patterns.length} mẫu
-                            </div>
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </aside>
-
-                  {/* Editor */}
-                  <section className="col-span-8 p-4 max-h-[75vh] overflow-auto">
-                    {!selectedCat ? (
-                      <div className="text-slate-600 text-xl">Chọn 1 category ở trái.</div>
-                    ) : (
-                      <>
-                        <div className="flex items-center gap-2">
-                          <div className="grow">
-                            <label className="text-base text-slate-500">ID</label>
-                            <input
-                              className="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
-                              value={selectedCat.id}
-                              readOnly
-                            />
-                          </div>
-                          <div className="grow">
-                            <label className="text-base text-slate-500">Tên (vi)</label>
-                            <input
-                              className="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
-                              value={selectedCat.title_vi}
-                              onChange={(e) =>
-                                setDb(
-                                  updateCategory(db, selectedCat.id, (draft) => {
-                                    draft.title_vi = e.target.value;
-                                  })
-                                )
-                              }
-                            />
-                          </div>
-                          <button
-                            className="self-end rounded-lg border border-rose-300 bg-rose-50 text-rose-800 px-3 py-1.5 text-lg hover:bg-rose-100"
-                            onClick={() => {
-                              if (
-                                !confirm(
-                                  `Xóa category "${selectedCat.title_vi}"?`
-                                )
-                              )
-                                return;
-                              setDb(deleteCategory(db, selectedCat.id));
-                              setSelectedCatId(null);
-                            }}
-                          >
-                            Xóa category
-                          </button>
-                        </div>
-
-                        <div className="mt-3">
-                          <label className="text-base text-slate-500">
-                            Synonyms (từ khóa, cách nhau bởi dấu phẩy)
-                          </label>
-                          <input
-                            className="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
-                            value={selectedCat.synonyms.join(", ")}
-                            onChange={(e) => {
-                              const arr = e.target.value
-                                .split(",")
-                                .map((x) => x.trim())
-                                .filter(Boolean);
-                              setDb(
-                                updateCategory(db, selectedCat.id, (d) => {
-                                  d.synonyms = arr;
-                                })
-                              );
-                            }}
-                          />
-                        </div>
-
-                        <div className="mt-4 flex items-center justify-between">
-                          <h4 className="text-lg font-medium">
-                            Patterns ({selectedCat.patterns.length})
-                          </h4>
-                          <button
-                            className="text-lg rounded-lg border border-slate-300 px-2 py-1 hover:bg-slate-50"
-                            onClick={() => {
-                              const id = prompt("ID pattern (duy nhất):");
-                              if (!id) return;
-                              setDb(
-                                upsertPattern(db, selectedCat.id, {
-                                  id,
-                                  label_vi: "nhãn (vi)",
-                                  formula_en: "formula",
-                                  desc_vi: "mô tả",
-                                  examples: [],
-                                  tags: [],
-                                })
-                              );
-                            }}
-                          >
-                            + Thêm pattern
-                          </button>
-                        </div>
-
-                        <div className="mt-2 space-y-3">
-                          {selectedCat.patterns.map((p) => (
-                            <div
-                              key={p.id}
-                              className="rounded-xl border border-slate-200 p-3"
+                {!authed ? (
+                    <PasswordGate onUnlock={() => setAuthed(true)} />
+                ) : (
+                    <>
+                        <div className="flex items-center justify-between px-4 py-3 border-b">
+                            <h2 className="font-semibold text-xl">Quản trị “Giải đề”</h2>
+                            <button
+                            className="rounded-lg border border-slate-300 px-3 py-1.5 text-lg hover:bg-slate-100"
+                            onClick={() => setAdminOpen(false)}
                             >
-                              <div className="flex items-center justify-between">
-                                <div className="font-medium text-lg">{p.id}</div>
-                                <button
-                                  className="text-lg rounded-lg border border-rose-300 bg-rose-50 text-rose-800 px-2 py-1 hover:bg-rose-100"
-                                  onClick={() =>
-                                    setDb(
-                                      deletePattern(db, selectedCat.id, p.id)
-                                    )
-                                  }
-                                >
-                                  Xóa
-                                </button>
-                              </div>
-
-                              <div className="grid grid-cols-2 gap-2 mt-2">
-                                <label className="text-base text-slate-500 col-span-2">
-                                  Nhãn (vi)
-                                  <input
-                                    className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
-                                    value={p.label_vi}
-                                    onChange={(e) =>
-                                      setDb(
-                                        upsertPattern(db, selectedCat.id, {
-                                          ...p,
-                                          label_vi: e.target.value,
-                                        })
-                                      )
-                                    }
-                                  />
-                                </label>
-
-                                <label className="text-base text-slate-500">
-                                  Công thức (en)
-                                  <input
-                                    className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
-                                    value={p.formula_en}
-                                    onChange={(e) =>
-                                      setDb(
-                                        upsertPattern(db, selectedCat.id, {
-                                          ...p,
-                                          formula_en: e.target.value,
-                                        })
-                                      )
-                                    }
-                                  />
-                                </label>
-
-                                <label className="text-base text-slate-500">
-                                  Confidence (0–1, tùy chọn)
-                                  <input
-                                    type="number"
-                                    step="0.05"
-                                    min={0}
-                                    max={1}
-                                    className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
-                                    value={
-                                      typeof p.confidence === "number"
-                                        ? p.confidence
-                                        : ""
-                                    }
-                                    onChange={(e) =>
-                                      setDb(
-                                        upsertPattern(db, selectedCat.id, {
-                                          ...p,
-                                          confidence:
-                                            e.target.value === ""
-                                              ? undefined
-                                              : Number(e.target.value),
-                                        })
-                                      )
-                                    }
-                                  />
-                                </label>
-
-                                <label className="text-base text-slate-500 col-span-2">
-                                  Mô tả (vi)
-                                  <textarea
-                                    rows={2}
-                                    className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
-                                    value={p.desc_vi}
-                                    onChange={(e) =>
-                                      setDb(
-                                        upsertPattern(db, selectedCat.id, {
-                                          ...p,
-                                          desc_vi: e.target.value,
-                                        })
-                                      )
-                                    }
-                                  />
-                                </label>
-
-                                <label className="text-base text-slate-500 col-span-2">
-                                  Ví dụ (mỗi dòng 1 ví dụ)
-                                  <textarea
-                                    rows={2}
-                                    className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
-                                    value={p.examples.join("\n")}
-                                    onChange={(e) =>
-                                      setDb(
-                                        upsertPattern(db, selectedCat.id, {
-                                          ...p,
-                                          examples: e.target.value
-                                            .split("\n")
-                                            .map((x) => x.trim())
-                                            .filter(Boolean),
-                                        })
-                                      )
-                                    }
-                                  />
-                                </label>
-
-                                <label className="text-base text-slate-500 col-span-2">
-                                  Tags (phân tách bởi dấu phẩy)
-                                  <input
-                                    className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
-                                    value={p.tags.join(", ")}
-                                    onChange={(e) =>
-                                      setDb(
-                                        upsertPattern(db, selectedCat.id, {
-                                          ...p,
-                                          tags: e.target.value
-                                            .split(",")
-                                            .map((x) => x.trim())
-                                            .filter(Boolean),
-                                        })
-                                      )
-                                    }
-                                  />
-                                </label>
-                              </div>
+                            Đóng
+                            </button>
+                        </div>
+                        <div className="grid grid-cols-12 gap-0">
+                        {/* Sidebar */}
+                        <aside className="col-span-4 border-r p-4 max-h-[75vh] overflow-auto">
+                            <div className="flex items-center justify-between mb-3">
+                            <h3 className="text-lg font-medium text-slate-800">
+                                Categories ({db.categories.length})
+                            </h3>
+                            <button
+                                className="text-lg rounded-lg border border-slate-300 px-2 py-1 hover:bg-slate-50"
+                                onClick={() => {
+                                const id = prompt("Nhập id (không dấu, duy nhất)");
+                                const title = id
+                                    ? prompt("Tên hiển thị (vi):")
+                                    : null;
+                                if (!id || !title) return;
+                                try {
+                                    const next = addCategory(db, {
+                                    id,
+                                    title_vi: title,
+                                    synonyms: [],
+                                    patterns: [],
+                                    });
+                                    setDb(next);
+                                    setSelectedCatId(id);
+                                } catch (e: any) {
+                                    alert(e?.message || "Lỗi thêm category");
+                                }
+                                }}
+                            >
+                                + Thêm
+                            </button>
                             </div>
-                          ))}
+
+                            <ul className="space-y-1">
+                            {db.categories.map((c) => (
+                                <li key={c.id}>
+                                <button
+                                    onClick={() => setSelectedCatId(c.id)}
+                                    className={classNames(
+                                    "w-full text-left px-3 py-2 rounded-lg border",
+                                    selectedCatId === c.id
+                                        ? "bg-blue-50 border-blue-200 text-blue-800"
+                                        : "bg-white border-slate-200 hover:bg-slate-50"
+                                    )}
+                                >
+                                    <div className="font-medium text-lg">{c.title_vi}</div>
+                                    <div className="text-base text-slate-500">
+                                    {c.id} • {c.patterns.length} mẫu
+                                    </div>
+                                </button>
+                                </li>
+                            ))}
+                            </ul>
+                        </aside>
+
+                        {/* Editor */}
+                        <section className="col-span-8 p-4 max-h-[75vh] overflow-auto">
+                            {!selectedCat ? (
+                            <div className="text-slate-600 text-xl">Chọn 1 category ở trái.</div>
+                            ) : (
+                            <>
+                                <div className="flex items-center gap-2">
+                                <div className="grow">
+                                    <label className="text-base text-slate-500">ID</label>
+                                    <input
+                                    className="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
+                                    value={selectedCat.id}
+                                    readOnly
+                                    />
+                                </div>
+                                <div className="grow">
+                                    <label className="text-base text-slate-500">Tên (vi)</label>
+                                    <input
+                                    className="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
+                                    value={selectedCat.title_vi}
+                                    onChange={(e) =>
+                                        setDb(
+                                        updateCategory(db, selectedCat.id, (draft) => {
+                                            draft.title_vi = e.target.value;
+                                        })
+                                        )
+                                    }
+                                    />
+                                </div>
+                                <button
+                                    className="self-end rounded-lg border border-rose-300 bg-rose-50 text-rose-800 px-3 py-1.5 text-lg hover:bg-rose-100"
+                                    onClick={() => {
+                                    if (
+                                        !confirm(
+                                        `Xóa category "${selectedCat.title_vi}"?`
+                                        )
+                                    )
+                                        return;
+                                    setDb(deleteCategory(db, selectedCat.id));
+                                    setSelectedCatId(null);
+                                    }}
+                                >
+                                    Xóa category
+                                </button>
+                                </div>
+
+                                <div className="mt-3">
+                                <label className="text-base text-slate-500">
+                                    Synonyms (từ khóa, cách nhau bởi dấu phẩy)
+                                </label>
+                                <input
+                                    className="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
+                                    value={selectedCat.synonyms.join(", ")}
+                                    onChange={(e) => {
+                                    const arr = e.target.value
+                                        .split(",")
+                                        .map((x) => x.trim())
+                                        .filter(Boolean);
+                                    setDb(
+                                        updateCategory(db, selectedCat.id, (d) => {
+                                        d.synonyms = arr;
+                                        })
+                                    );
+                                    }}
+                                />
+                                </div>
+
+                                <div className="mt-4 flex items-center justify-between">
+                                <h4 className="text-lg font-medium">
+                                    Patterns ({selectedCat.patterns.length})
+                                </h4>
+                                <button
+                                    className="text-lg rounded-lg border border-slate-300 px-2 py-1 hover:bg-slate-50"
+                                    onClick={() => {
+                                    const id = prompt("ID pattern (duy nhất):");
+                                    if (!id) return;
+                                    setDb(
+                                        upsertPattern(db, selectedCat.id, {
+                                        id,
+                                        label_vi: "nhãn (vi)",
+                                        formula_en: "formula",
+                                        desc_vi: "mô tả",
+                                        examples: [],
+                                        tags: [],
+                                        })
+                                    );
+                                    }}
+                                >
+                                    + Thêm pattern
+                                </button>
+                                </div>
+
+                                <div className="mt-2 space-y-3">
+                                {selectedCat.patterns.map((p) => (
+                                    <div
+                                    key={p.id}
+                                    className="rounded-xl border border-slate-200 p-3"
+                                    >
+                                    <div className="flex items-center justify-between">
+                                        <div className="font-medium text-lg">{p.id}</div>
+                                        <button
+                                        className="text-lg rounded-lg border border-rose-300 bg-rose-50 text-rose-800 px-2 py-1 hover:bg-rose-100"
+                                        onClick={() =>
+                                            setDb(
+                                            deletePattern(db, selectedCat.id, p.id)
+                                            )
+                                        }
+                                        >
+                                        Xóa
+                                        </button>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-2 mt-2">
+                                        <label className="text-base text-slate-500 col-span-2">
+                                        Nhãn (vi)
+                                        <input
+                                            className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
+                                            value={p.label_vi}
+                                            onChange={(e) =>
+                                            setDb(
+                                                upsertPattern(db, selectedCat.id, {
+                                                ...p,
+                                                label_vi: e.target.value,
+                                                })
+                                            )
+                                            }
+                                        />
+                                        </label>
+
+                                        <label className="text-base text-slate-500">
+                                        Công thức (en)
+                                        <input
+                                            className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
+                                            value={p.formula_en}
+                                            onChange={(e) =>
+                                            setDb(
+                                                upsertPattern(db, selectedCat.id, {
+                                                ...p,
+                                                formula_en: e.target.value,
+                                                })
+                                            )
+                                            }
+                                        />
+                                        </label>
+
+                                        <label className="text-base text-slate-500">
+                                        Confidence (0–1, tùy chọn)
+                                        <input
+                                            type="number"
+                                            step="0.05"
+                                            min={0}
+                                            max={1}
+                                            className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
+                                            value={
+                                            typeof p.confidence === "number"
+                                                ? p.confidence
+                                                : ""
+                                            }
+                                            onChange={(e) =>
+                                            setDb(
+                                                upsertPattern(db, selectedCat.id, {
+                                                ...p,
+                                                confidence:
+                                                    e.target.value === ""
+                                                    ? undefined
+                                                    : Number(e.target.value),
+                                                })
+                                            )
+                                            }
+                                        />
+                                        </label>
+
+                                        <label className="text-base text-slate-500 col-span-2">
+                                        Mô tả (vi)
+                                        <textarea
+                                            rows={2}
+                                            className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
+                                            value={p.desc_vi}
+                                            onChange={(e) =>
+                                            setDb(
+                                                upsertPattern(db, selectedCat.id, {
+                                                ...p,
+                                                desc_vi: e.target.value,
+                                                })
+                                            )
+                                            }
+                                        />
+                                        </label>
+
+                                        <label className="text-base text-slate-500 col-span-2">
+                                        Ví dụ (mỗi dòng 1 ví dụ)
+                                        <textarea
+                                            rows={2}
+                                            className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
+                                            value={p.examples.join("\n")}
+                                            onChange={(e) =>
+                                            setDb(
+                                                upsertPattern(db, selectedCat.id, {
+                                                ...p,
+                                                examples: e.target.value
+                                                    .split("\n")
+                                                    .map((x) => x.trim())
+                                                    .filter(Boolean),
+                                                })
+                                            )
+                                            }
+                                        />
+                                        </label>
+
+                                        <label className="text-base text-slate-500 col-span-2">
+                                        Tags (phân tách bởi dấu phẩy)
+                                        <input
+                                            className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
+                                            value={p.tags.join(", ")}
+                                            onChange={(e) =>
+                                            setDb(
+                                                upsertPattern(db, selectedCat.id, {
+                                                ...p,
+                                                tags: e.target.value
+                                                    .split(",")
+                                                    .map((x) => x.trim())
+                                                    .filter(Boolean),
+                                                })
+                                            )
+                                            }
+                                        />
+                                        </label>
+                                    </div>
+                                    </div>
+                                ))}
+                                </div>
+
+                                {/* Import / Export / Reset */}
+                                <div className="mt-4 flex flex-wrap items-center gap-2">
+                                <button
+                                    className="rounded-lg border border-slate-300 px-3 py-1.5 text-lg hover:bg-slate-50"
+                                    onClick={() => {
+                                    const data = exportJSON(db);
+                                    const blob = new Blob([data], {
+                                        type: "application/json;charset=utf-8",
+                                    });
+                                    const url = URL.createObjectURL(blob);
+                                    const a = document.createElement("a");
+                                    a.href = url;
+                                    a.download = "giaide.json";
+                                    a.click();
+                                    URL.revokeObjectURL(url);
+                                    }}
+                                >
+                                    ⬇️ Export JSON
+                                </button>
+
+                                <button
+                                    className="rounded-lg border border-slate-300 px-3 py-1.5 text-lg hover:bg-slate-50"
+                                    onClick={() => {
+                                    const raw = prompt(
+                                        "Dán JSON vào đây (sẽ thay thế DB hiện tại):"
+                                    );
+                                    if (!raw) return;
+                                    try {
+                                        const next = importJSON(raw);
+                                        setDb(next);
+                                        alert("Import thành công!");
+                                    } catch (e: any) {
+                                        alert(e?.message || "JSON không hợp lệ");
+                                    }
+                                    }}
+                                >
+                                    ⬆️ Import JSON
+                                </button>
+
+                                <button
+                                    className="rounded-lg border border-amber-300 bg-amber-50 text-amber-900 px-3 py-1.5 text-lg hover:bg-amber-100"
+                                    onClick={() => {
+                                    if (
+                                        confirm(
+                                        "Reset về dữ liệu mặc định? (Mất mọi chỉnh sửa)"
+                                        )
+                                    ) {
+                                        hardReset();
+                                        alert("Đã reset về mặc định.");
+                                    }
+                                    }}
+                                >
+                                    ♻️ Reset mặc định
+                                </button>
+                                </div>
+                            </>
+                            )}
+                        </section>
                         </div>
-
-                        {/* Import / Export / Reset */}
-                        <div className="mt-4 flex flex-wrap items-center gap-2">
-                          <button
-                            className="rounded-lg border border-slate-300 px-3 py-1.5 text-lg hover:bg-slate-50"
-                            onClick={() => {
-                              const data = exportJSON(db);
-                              const blob = new Blob([data], {
-                                type: "application/json;charset=utf-8",
-                              });
-                              const url = URL.createObjectURL(blob);
-                              const a = document.createElement("a");
-                              a.href = url;
-                              a.download = "giaide.json";
-                              a.click();
-                              URL.revokeObjectURL(url);
-                            }}
-                          >
-                            ⬇️ Export JSON
-                          </button>
-
-                          <button
-                            className="rounded-lg border border-slate-300 px-3 py-1.5 text-lg hover:bg-slate-50"
-                            onClick={() => {
-                              const raw = prompt(
-                                "Dán JSON vào đây (sẽ thay thế DB hiện tại):"
-                              );
-                              if (!raw) return;
-                              try {
-                                const next = importJSON(raw);
-                                setDb(next);
-                                alert("Import thành công!");
-                              } catch (e: any) {
-                                alert(e?.message || "JSON không hợp lệ");
-                              }
-                            }}
-                          >
-                            ⬆️ Import JSON
-                          </button>
-
-                          <button
-                            className="rounded-lg border border-amber-300 bg-amber-50 text-amber-900 px-3 py-1.5 text-lg hover:bg-amber-100"
-                            onClick={() => {
-                              if (
-                                confirm(
-                                  "Reset về dữ liệu mặc định? (Mất mọi chỉnh sửa)"
-                                )
-                              ) {
-                                hardReset();
-                                alert("Đã reset về mặc định.");
-                              }
-                            }}
-                          >
-                            ♻️ Reset mặc định
-                          </button>
-                        </div>
-                      </>
-                    )}
-                  </section>
-                </div>
-              )}
+                    </>
+                )}
             </div>
           </div>
         </div>
