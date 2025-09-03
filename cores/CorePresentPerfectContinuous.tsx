@@ -11,15 +11,20 @@ const FormulaChip: React.FC<Chip> = ({ label, formula, colors }) => {
       onClick={copy}
       title={`Copy: ${formula}`}
       className={[
-        'group relative w-full min-w-0 px-4 py-3 rounded-2xl',
-        'text-white font-extrabold shadow-lg transition-[transform,box-shadow] active:scale-95',
-        'ring-1 ring-white/20 bg-gradient-to-r', colors,
-        'flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 text-left'
+        'group relative w-full min-w-0 px-4 py-3 rounded-2xl text-white font-extrabold shadow-lg',
+        'transition-[transform,box-shadow] active:scale-95 ring-1 ring-white/20',
+        'bg-gradient-to-r', colors,
+        // Bố cục 2 dòng, label ở trên, formula ở dưới
+        'flex flex-col items-start gap-1 text-left'
       ].join(' ')}
     >
-      <span className="truncate">{label}</span>
-      <span className="hidden sm:inline ml-2 text-white/85 font-semibold">({formula})</span>
-      <span className="sm:hidden text-white/85 font-semibold text-xs leading-tight">({formula})</span>
+      {/* Chú giải (nhỏ hơn) */}
+      <span className="text-sm font-semibold text-white/80 truncate">{label}</span>
+      
+      {/* Công thức (lớn hơn, kế thừa extrabold) */}
+      <span className="truncate">{formula}</span>
+
+      {/* toast nhỏ khi copy */}
       {copied && (
         <span className="absolute -top-2 -right-2 text-[10px] px-2 py-0.5 rounded-full bg-black/70">Copied!</span>
       )}

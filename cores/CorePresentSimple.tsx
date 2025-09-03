@@ -11,26 +11,18 @@ const FormulaChip: React.FC<Chip> = ({ label, formula, colors }) => {
       onClick={copy}
       title={`Copy: ${formula}`}
       className={[
-        // chiếm full chiều ngang cột + cho phép co giãn
-        'group relative w-full min-w-0 px-4 py-3 rounded-2xl',
-        // kiểu chữ + đổ bóng
-        'text-white font-extrabold shadow-lg transition-[transform,box-shadow] active:scale-95',
-        // viền mờ + gradient Apple
-        'ring-1 ring-white/20 bg-gradient-to-r', colors,
-        // bố cục responsive: hẹp = 2 dòng, rộng = 1 dòng
-        'flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 text-left'
+        'group relative w-full min-w-0 px-4 py-3 rounded-2xl text-white font-extrabold shadow-lg',
+        'transition-[transform,box-shadow] active:scale-95 ring-1 ring-white/20',
+        'bg-gradient-to-r', colors,
+        // Bố cục 2 dòng, label ở trên, formula ở dưới
+        'flex flex-col items-start gap-1 text-left'
       ].join(' ')}
     >
-      {/* label ưu tiên; nếu dài sẽ tự thu gọn (truncate) */}
-      <span className="truncate">{label}</span>
-
-      {/* công thức: hiện 2 kiểu để tối ưu hẹp/rộng */}
-      <span className="hidden sm:inline ml-2 text-white/85 font-semibold">
-        ({formula})
-      </span>
-      <span className="sm:hidden text-white/85 font-semibold text-xs leading-tight">
-        ({formula})
-      </span>
+      {/* Chú giải (nhỏ hơn) */}
+      <span className="text-sm font-semibold text-white/80 truncate">{label}</span>
+      
+      {/* Công thức (lớn hơn, kế thừa extrabold) */}
+      <span className="truncate">{formula}</span>
 
       {/* toast nhỏ khi copy */}
       {copied && (

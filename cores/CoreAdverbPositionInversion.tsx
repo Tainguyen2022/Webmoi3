@@ -12,15 +12,20 @@ const FormulaChip: React.FC<Chip> = ({ label, formula, colors }) => {
       onClick={copy}
       title={`Copy: ${formula}`}
       className={[
-        'group relative w-full min-w-0 px-4 py-3 rounded-2xl',
-        'text-white font-extrabold shadow-lg transition-[transform,box-shadow] active:scale-95',
-        'ring-1 ring-white/20 bg-gradient-to-r', colors,
-        'flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 text-left'
+        'group relative w-full min-w-0 px-4 py-3 rounded-2xl text-white font-extrabold shadow-lg',
+        'transition-[transform,box-shadow] active:scale-95 ring-1 ring-white/20',
+        'bg-gradient-to-r', colors,
+        // Bố cục 2 dòng, label ở trên, formula ở dưới
+        'flex flex-col items-start gap-1 text-left'
       ].join(' ')}
     >
-      <span className="truncate">{label}</span>
-      <span className="hidden sm:inline ml-2 text-white/85 font-semibold">({formula})</span>
-      <span className="sm:hidden text-white/85 font-semibold text-xs leading-tight">({formula})</span>
+      {/* Chú giải (nhỏ hơn) */}
+      <span className="text-sm font-semibold text-white/80 truncate">{label}</span>
+      
+      {/* Công thức (lớn hơn, kế thừa extrabold) */}
+      <span className="truncate">{formula}</span>
+
+      {/* toast nhỏ khi copy */}
       {copied && (
         <span className="absolute -top-2 -right-2 text-[10px] px-2 py-0.5 rounded-full bg-black/70">Copied!</span>
       )}
@@ -56,7 +61,7 @@ export default function CoreAdverbPositionInversion() {
         <div className="mt-5 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
           <FormulaChip label="Đảo ngữ" formula="Negative Adv + Aux + S + V" colors="from-sky-500 via-blue-500 to-indigo-600"/>
           <FormulaChip label="Ví dụ" formula="Never have I seen..." colors="from-emerald-500 via-lime-500 to-amber-500"/>
-          <FormulaChip label="Not only..." formula="Not only... but also..." colors="from-rose-500 via-red-500 to-orange-500"/>
+          <FormulaChip label="Với V thường" formula="Rarely did he say..." colors="from-rose-500 via-red-500 to-orange-500"/>
         </div>
 
         {/* TOC */}
@@ -81,20 +86,18 @@ export default function CoreAdverbPositionInversion() {
       
       <Section id="rule" title="Quy tắc Đảo ngữ (Quan trọng!)" emoji="🔑">
         <p>
-            Khi một trạng từ hoặc cụm trạng từ mang nghĩa phủ định/giới hạn được chuyển lên đầu câu, trật tự của chủ ngữ (S) và trợ động từ (Aux) phải được đảo ngược, giống như trong câu hỏi.
+            Khi một trạng từ hoặc cụm trạng từ mang nghĩa <b>phủ định</b> hoặc <b>giới hạn</b> được chuyển lên đầu câu, trật tự của chủ ngữ (S) và trợ động từ (Aux) phải được đảo ngược, giống như trong câu hỏi.
         </p>
          <div className="rounded-xl p-4 bg-blue-50 border border-blue-200">
-            <p className="font-bold text-blue-700">Cấu trúc: Negative Adverb + Auxiliary + Subject + Main Verb</p>
-        </div>
-        <p className="mt-2 font-semibold">Ví dụ phân tích:</p>
-         <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <p>Câu gốc: <i>I have <b>never</b> seen such a beautiful sight.</i></p>
-            <p>Câu đảo ngữ: <i><b>Never</b> have I seen such a beautiful sight.</i></p>
+            <p className="font-bold text-blue-700">Cấu trúc: Negative Adverbial + Auxiliary + Subject + Main Verb...</p>
         </div>
         <p className="mt-2">Nếu câu gốc không có trợ động từ (thì hiện tại đơn/quá khứ đơn), ta phải mượn trợ động từ <b>do/does/did</b>.</p>
          <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <p>Câu gốc: <i>He <b>little</b> knew about the danger.</i></p>
-            <p>Câu đảo ngữ: <i><b>Little</b> did he know about the danger.</i></p>
+            <p>Câu gốc: <i>I have <b>never</b> seen such a beautiful sight.</i></p>
+            <p>Câu đảo ngữ: <i><b>Never</b> have I seen such a beautiful sight.</i></p>
+             <hr className="my-2"/>
+            <p>Câu gốc: <i>She <b>rarely</b> complains about anything.</i></p>
+            <p>Câu đảo ngữ: <i><b>Rarely</b> does she complain about anything.</i></p>
         </div>
       </Section>
       

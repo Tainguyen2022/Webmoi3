@@ -13,10 +13,10 @@ const FeaturedNewsCard: React.FC<{ article: NewsArticle; onSelect: () => void }>
             <img className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src={article.thumbnail} alt={article.title_en} />
         </div>
         <div className="p-6 md:p-8">
-            <p className="text-sm text-indigo-600 font-semibold">{article.category_vi}</p>
-            <h2 className="mt-2 text-2xl md:text-3xl font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">{article.title_vi}</h2>
-            <p className="mt-1 text-gray-600">{article.title_en}</p>
-            <p className="mt-4 text-sm text-gray-500">{new Date(article.date || Date.now()).toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <p className="text-lg text-indigo-600 font-semibold">{article.category_vi}</p>
+            <h2 className="mt-2 text-3xl md:text-4xl font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">{article.title_vi}</h2>
+            <p className="mt-1 text-xl text-gray-600">{article.title_en}</p>
+            <p className="mt-4 text-lg text-gray-500">{new Date(article.date || Date.now()).toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
         </div>
     </div>
 );
@@ -31,9 +31,9 @@ const NewsCard: React.FC<{ article: NewsArticle; onSelect: () => void }> = ({ ar
             <img className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src={article.thumbnail} alt={article.title_en} />
         </div>
         <div className="p-4">
-            <p className="text-xs text-indigo-600 font-semibold">{article.category_vi}</p>
-            <h3 className="text-gray-800 font-bold text-lg mt-1 group-hover:text-indigo-600 transition-colors">{article.title_vi}</h3>
-            <p className="text-gray-500 text-sm">{article.title_en}</p>
+            <p className="text-base text-indigo-600 font-semibold">{article.category_vi}</p>
+            <h3 className="text-gray-800 font-bold text-xl mt-1 group-hover:text-indigo-600 transition-colors">{article.title_vi}</h3>
+            <p className="text-lg text-gray-500">{article.title_en}</p>
         </div>
     </div>
 );
@@ -44,7 +44,7 @@ const ArticleView: React.FC<{ article: NewsArticle; onBack: () => void }> = ({ a
     const [isSyncScroll, setIsSyncScroll] = useState(true);
     const lastScrolled = useRef<'en' | 'vi' | null>(null);
     const [theme, setTheme] = useState<Theme>('light');
-    const [fontSize, setFontSize] = useState(18); // Use a number for unlimited zoom
+    const [fontSize, setFontSize] = useState(23); // Use a number for unlimited zoom
 
     const handleScroll = (scroller: 'en' | 'vi') => {
         if (!isSyncScroll || lastScrolled.current !== scroller) return;
@@ -79,33 +79,33 @@ const ArticleView: React.FC<{ article: NewsArticle; onBack: () => void }> = ({ a
                 <img src={article.thumbnail} alt={article.title_en} className="absolute inset-0 w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20"></div>
                 <div className="relative h-full flex flex-col justify-end text-white p-8">
-                    <h1 className="text-3xl md:text-5xl font-bold drop-shadow-lg">{article.title_vi}</h1>
-                    <p className="text-xl md:text-2xl mt-2 text-gray-200 drop-shadow-lg">{article.title_en}</p>
+                    <h1 className="text-4xl md:text-6xl font-bold drop-shadow-lg">{article.title_vi}</h1>
+                    <p className="text-2xl md:text-3xl mt-2 text-gray-200 drop-shadow-lg">{article.title_en}</p>
                 </div>
             </div>
 
             <div className={`relative p-6 md:p-8 rounded-t-2xl -mt-10 shadow-2xl ${contentThemeClasses[theme]} transition-colors duration-300`}>
                 <div className="flex items-center justify-between mb-4 sticky top-16 py-2 z-10 border-b border-gray-200/20" style={{backgroundColor: 'inherit'}}>
-                    <button onClick={onBack} className="flex items-center gap-2 px-4 py-2 bg-gray-100/10 text-inherit font-semibold rounded-lg hover:bg-gray-200/20 transition-colors">
+                    <button onClick={onBack} className="text-lg flex items-center gap-2 px-4 py-2 bg-gray-100/10 text-inherit font-semibold rounded-lg hover:bg-gray-200/20 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
                         Quay lại
                     </button>
                     <div className="flex items-center space-x-4">
                         {/* Font Size Controls */}
                         <div className="flex items-center space-x-2">
-                             <button onClick={decreaseFontSize} className="px-3 py-1 text-lg rounded-md hover:bg-gray-200/20 transition-colors">-</button>
-                             <span className="text-sm font-semibold w-6 text-center">{fontSize}</span>
-                             <button onClick={increaseFontSize} className="px-3 py-1 text-lg rounded-md hover:bg-gray-200/20 transition-colors">+</button>
+                             <button onClick={decreaseFontSize} className="px-3 py-1 text-2xl rounded-md hover:bg-gray-200/20 transition-colors">-</button>
+                             <span className="text-lg font-semibold w-8 text-center">{fontSize}</span>
+                             <button onClick={increaseFontSize} className="px-3 py-1 text-2xl rounded-md hover:bg-gray-200/20 transition-colors">+</button>
                         </div>
                         {/* Theme Controls */}
                         <div className="flex items-center space-x-1 p-1 rounded-lg bg-gray-200/10">
-                            <button onClick={() => setTheme('light')} className={`w-6 h-6 rounded-md bg-white border ${theme === 'light' ? 'ring-2 ring-blue-500' : ''}`}></button>
-                            <button onClick={() => setTheme('sepia')} className={`w-6 h-6 rounded-md bg-[#fbf3e4] border ${theme === 'sepia' ? 'ring-2 ring-blue-500' : ''}`}></button>
-                            <button onClick={() => setTheme('dark')} className={`w-6 h-6 rounded-md bg-gray-800 border ${theme === 'dark' ? 'ring-2 ring-blue-500' : ''}`}></button>
+                            <button onClick={() => setTheme('light')} className={`w-8 h-8 rounded-md bg-white border ${theme === 'light' ? 'ring-2 ring-blue-500' : ''}`}></button>
+                            <button onClick={() => setTheme('sepia')} className={`w-8 h-8 rounded-md bg-[#fbf3e4] border ${theme === 'sepia' ? 'ring-2 ring-blue-500' : ''}`}></button>
+                            <button onClick={() => setTheme('dark')} className={`w-8 h-8 rounded-md bg-gray-800 border ${theme === 'dark' ? 'ring-2 ring-blue-500' : ''}`}></button>
                         </div>
                          {/* Sync Scroll Toggle */}
                         <div className="flex items-center space-x-2">
-                            <span className="text-sm font-medium">Sync Scroll</span>
+                            <span className="text-lg font-medium">Sync Scroll</span>
                             <label className="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" checked={isSyncScroll} onChange={() => setIsSyncScroll(!isSyncScroll)} className="sr-only peer" />
                                 <div className="w-11 h-6 bg-gray-200/50 rounded-full peer peer-focus:ring-4 peer-focus:ring-indigo-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
@@ -155,7 +155,7 @@ const NewsPage: React.FC = () => {
         : articles;
 
     const navButtonClass = (isActive: boolean) => 
-        `whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+        `whitespace-nowrap py-3 px-1 border-b-2 font-medium text-lg transition-colors ${
           isActive
             ? 'border-indigo-500 text-indigo-600'
             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -171,8 +171,8 @@ const NewsPage: React.FC = () => {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold text-gray-900">Báo song ngữ</h1>
-                <p className="mt-1 text-gray-600">Khám phá thế giới qua các bài đọc được tuyển chọn.</p>
+                <h1 className="text-4xl font-bold text-gray-900">Báo song ngữ</h1>
+                <p className="mt-1 text-xl text-gray-600">Khám phá thế giới qua các bài đọc được tuyển chọn.</p>
             </div>
             
             <nav className="border-b border-gray-200">

@@ -1,404 +1,662 @@
-import React from 'react';
+// React component + Tailwind UI cho tab “Giải đề” + Admin (password MCB01111110)
 
-// This constant holds the entire self-contained HTML application for the Solve Page.
-// The embedded Javascript has been fixed to be valid and functional.
-const solvePageHtml = `
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giải đề (Search Patterns)</title>
-    <style>
-        :root {
-            --bg-color: #f8f9fa;
-            --card-bg-color: #ffffff;
-            --text-color: #212529;
-            --subtle-text-color: #6c757d;
-            --primary-color: #0d6efd;
-            --highlight-color: #ffc107;
-            --border-color: #dee2e6;
-            --shadow-color: rgba(0, 0, 0, 0.05);
-            --chip-bg-color: #e9ecef;
-            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            --border-radius: 12px;
-        }
-        html {
-            scroll-behavior: smooth;
-        }
-        body {
-            font-family: var(--font-family);
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 1.5rem;
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-        .container {
-            max-width: 960px;
-            margin: 0 auto;
-        }
-        header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin: 0 0 0.5rem 0;
-        }
-        #searchInput {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            font-size: 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            box-shadow: 0 2px 4px var(--shadow-color);
-            transition: border-color 0.2s, box-shadow 0.2s;
-            box-sizing: border-box;
-        }
-        #searchInput:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
-        }
-        .chips-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            justify-content: center;
-            margin: 1.5rem 0;
-        }
-        .chip {
-            background-color: var(--chip-bg-color);
-            color: var(--subtle-text-color);
-            padding: 0.3rem 0.8rem;
-            border-radius: 99px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.2s, color 0.2s;
-            border: 1px solid transparent;
-        }
-        .chip:hover {
-            background-color: #d3d9df;
-            color: var(--text-color);
-        }
-        #resultsContainer {
-            display: grid;
-            gap: 1.5rem;
-        }
-        .pattern-card {
-            background-color: var(--card-bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            box-shadow: 0 4px 8px var(--shadow-color);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .pattern-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.07);
-        }
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-        .category-chip {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 0.2rem 0.6rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-        .pattern-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin: 0;
-        }
-        .formula-container {
-            position: relative;
-            background-color: #f1f3f5;
-            padding: 1rem;
-            border-radius: 8px;
-            margin: 1rem 0;
-        }
-        .formula-code {
-            font-family: "SF Mono", "Menlo", "Consolas", monospace;
-            font-size: 0.9rem;
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
-        .copy-btn {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            background-color: #ced4da;
-            color: #495057;
-            border: none;
-            padding: 0.3rem 0.6rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .copy-btn:hover {
-            background-color: #adb5bd;
-        }
-        .pattern-tip {
-            font-size: 0.9rem;
-            color: var(--subtle-text-color);
-            margin: 1rem 0;
-        }
-        .pattern-tip strong {
-            color: var(--text-color);
-        }
-        .example {
-            border-left: 3px solid var(--primary-color);
-            padding-left: 1rem;
-            margin-top: 1rem;
-        }
-        .example-en, .example-vi {
-            margin: 0;
-        }
-        .example-en {
-            font-weight: 600;
-        }
-        .example-vi {
-            font-size: 0.9rem;
-            color: #495057;
-        }
-        mark {
-            background-color: var(--highlight-color);
-            padding: 0.1rem 0.2rem;
-            border-radius: 3px;
-            color: inherit;
-        }
-        .no-results {
-            text-align: center;
-            padding: 2rem;
-            color: var(--subtle-text-color);
-            background-color: var(--card-bg-color);
-            border: 1px dashed var(--border-color);
-            border-radius: var(--border-radius);
-        }
-        footer {
-            text-align: center;
-            margin-top: 3rem;
-            font-size: 0.8rem;
-            color: #adb5bd;
-        }
-        @media (max-width: 600px) {
-            body { padding: 1rem; }
-            h1 { font-size: 2rem; }
-            .chips-container { justify-content: flex-start; }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>Giải đề (Search patterns)</h1>
-            <input type="search" id="searchInput" placeholder="Gõ: mạo tính danh, giới V-ing, điều kiện 1, so sánh bằng, hở giữa…">
-        </header>
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  GiaideDB,
+  loadDB,
+  saveDB,
+  resetDB,
+  search,
+  SearchResult,
+  SUGGESTED_QUERIES,
+  bumpRecent,
+  exportJSON,
+  importJSON,
+  addCategory,
+  updateCategory,
+  deleteCategory,
+  upsertPattern,
+  deletePattern,
+  removeDiacritics,
+  isPatternInCurrentGrammar,
+} from "../services/solveService";
 
-        <div class="chips-container" id="chipsContainer">
-            <!-- Chips will be inserted here by JS -->
+const ADMIN_PASSWORD = "MCB01111110";
+
+function classNames(...xs: (string | false | undefined)[]) {
+  return xs.filter(Boolean).join(" ");
+}
+
+function useDBState() {
+  const [db, setDb] = useState<GiaideDB>(() => loadDB());
+  const hardReset = () => setDb(resetDB());
+  const setAndSave = (next: GiaideDB) => {
+    setDb(next);
+    saveDB(next);
+  };
+  return { db, setDb: setAndSave, hardReset };
+}
+
+function useSearch(db: GiaideDB, q: string) {
+  const [results, setResults] = useState<SearchResult[]>([]);
+  useEffect(() => {
+    if (!q.trim()) {
+      setResults([]);
+      return;
+    }
+    setResults(search(q, db));
+  }, [q, db]);
+  return results;
+}
+
+// highlight đơn giản (diacritics-insensitive): tô đậm token dài nhất trùng
+function Highlight({ text, query }: { text: string; query: string }) {
+  const tokens = useMemo(() => {
+    return removeDiacritics(query.toLowerCase())
+      .split(/[\s,;|/]+/g)
+      .filter(Boolean)
+      .sort((a, b) => b.length - a.length);
+  }, [query]);
+
+  if (!tokens.length) return <>{text}</>;
+
+  const norm = removeDiacritics(text.toLowerCase());
+  let bestIdx = -1;
+  let bestLen = 0;
+
+  for (const t of tokens) {
+    const i = norm.indexOf(t);
+    if (i >= 0 && t.length > bestLen) {
+      bestIdx = i;
+      bestLen = t.length;
+    }
+  }
+
+  if (bestIdx === -1) return <>{text}</>;
+
+  // cắt theo vị trí trong chuỗi gốc
+  const start = text.slice(0, bestIdx);
+  const mid = text.slice(bestIdx, bestIdx + bestLen);
+  const end = text.slice(bestIdx + bestLen);
+
+  return (
+    <>
+      {start}
+      <mark className="bg-yellow-200 rounded px-0.5">{mid}</mark>
+      {end}
+    </>
+  );
+}
+
+export default function SolvePage() {
+  const { db, setDb, hardReset } = useDBState();
+  const [q, setQ] = useState("");
+  const [copied, setCopied] = useState<string | null>(null);
+
+  const results = useSearch(db, q);
+
+  // Admin
+  const [adminOpen, setAdminOpen] = useState(false);
+  const [authed, setAuthed] = useState(false);
+  const [selectedCatId, setSelectedCatId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (db.categories.length && !selectedCatId) {
+      setSelectedCatId(db.categories[0].id);
+    }
+  }, [db, selectedCatId]);
+
+  const selectedCat = useMemo(
+    () => db.categories.find((c) => c.id === selectedCatId) || null,
+    [db, selectedCatId]
+  );
+
+  function onCopyFormula(f: string, patternId: string) {
+    navigator.clipboard.writeText(f);
+    setCopied(patternId);
+    bumpRecent(patternId);
+    setTimeout(() => setCopied(null), 1200);
+  }
+
+  function onRunChip(query: string) {
+    setQ(query);
+  }
+
+  return (
+    <div className="min-h-[100dvh] bg-slate-50">
+      {/* Header */}
+      <header className="sticky top-0 z-10 bg-white/80 backdrop-blur border-b border-slate-200">
+        <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-3xl">🧩</span>
+            <div>
+              <h1 className="text-2xl font-semibold text-slate-900">
+                Giải đề
+              </h1>
+              <p className="text-sm text-slate-500">
+                Tìm theo từ khóa EN–VI (bỏ dấu): “mạo”, “giới”, “điều kiện 1”, “so
+                sánh bằng”, “hở giữa”, “sau ngoại động từ”…
+              </p>
+            </div>
+          </div>
+
+          <button
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-lg hover:bg-slate-100"
+            onClick={() => {
+              if (!authed) {
+                const pw = prompt("Nhập mật khẩu quản trị");
+                if (pw === ADMIN_PASSWORD) {
+                  setAuthed(true);
+                  setAdminOpen(true);
+                } else if (pw !== null) {
+                  alert("Sai mật khẩu.");
+                }
+              } else {
+                setAdminOpen(true);
+              }
+            }}
+            title="Quản trị"
+          >
+            <span className="text-xl">🔧</span>
+            <span>Quản trị</span>
+          </button>
+        </div>
+      </header>
+
+      {/* Search bar + chips */}
+      <div className="mx-auto max-w-6xl px-4 py-4">
+        <div className="relative">
+          <input
+            className="w-full rounded-2xl border border-slate-300 bg-white px-5 py-3.5 text-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Nhập từ khóa… (vd: 'mạo', 'giới', 'điều kiện 1', 'so sánh bằng', 'hở giữa'...)"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") setQ("");
+            }}
+          />
+          <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400">
+            ⌘K
+          </div>
         </div>
 
-        <main id="resultsContainer">
-            <!-- Results will be inserted here by JS -->
-        </main>
-        
-        <footer>
-            Made for Matcanban · No framework · Diacritic-insensitive search
-        </footer>
-    </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {SUGGESTED_QUERIES.map((c) => (
+            <button
+              key={c.label}
+              className="rounded-full bg-slate-100 text-slate-700 px-3 py-1.5 text-lg hover:bg-slate-200"
+              onClick={() => onRunChip(c.query)}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
-    <script>
-        (function() {
-            const PATTERNS = [
-                { id:"art_core", category:"Articles", title:"Mạo — tổng quan", formula:"a/an + N (số ít đếm được); the + N (xác định); Ø + N(pl/unc.) (khái quát)", tip:"a trước phụ âm; an trước nguyên âm/âm nguyên âm; the dùng khi đã xác định/duy nhất.", examples:[{en:"She bought an umbrella.", vi:"Cô ấy mua một chiếc ô."}], triggers:["mạo","mạo từ","article","art","articles"]},
-                { id:"art_n", category:"Articles", title:"Mạo danh", formula:"Article + Noun", tip:"Danh từ số ít đếm được cần mạo từ (a/an/the) hoặc hạn định từ khác.", examples:[{en:"a book", vi:"một quyển sách"}], triggers:["mạo danh","article + noun","a/an + noun","art noun"]},
-                { id:"art_adj_n", category:"Articles", title:"Mạo tính danh", formula:"Article + Adj + Noun", tip:"Tính từ đứng trước danh từ: a/an + adj + noun.", examples:[{en:"an interesting book", vi:"một quyển sách thú vị"}], triggers:["mạo tính danh","article adj noun","a/an + adj + noun"]},
-                { id:"art_adv_adj_n", category:"Articles", title:"Mạo trạng tính danh", formula:"Article + Adv + Adj + Noun", tip:"Adv (very, quite, extremely, …) bổ nghĩa cho adj.", examples:[{en:"a very difficult question", vi:"một câu hỏi rất khó"}], triggers:["mạo trạng tính danh","article adv adj noun"]},
-                { id:"art_adj_adj_n", category:"Articles", title:"Mạo tính tính danh", formula:"Article + Adj + Adj + Noun", tip:"Thứ tự tính từ cơ bản: opinion → size → color → noun.", examples:[{en:"a small red box", vi:"một chiếc hộp đỏ nhỏ"}], triggers:["mạo tính tính danh","article adj adj noun"]},
-                { id:"art_n_prep_n", category:"Articles", title:"Mạo danh giới", formula:"Article + N + Prep + N", tip:"Danh từ + cụm giới từ phía sau để làm rõ nghĩa.", examples:[{en:"the way to school", vi:"con đường đến trường"}], triggers:["mạo danh giới","article noun preposition","n prep n"]},
-                { id:"prep_core", category:"Prepositions", title:"Giới — tổng quan", formula:"Prep + (N / N-phrase / V-ing / clause)", tip:"Giới từ dẫn cụm danh từ hoặc V-ing; chú ý collocations: at/on/in, by/with, for/of, from/to…", examples:[{en:"at night / in the morning", vi:"vào ban đêm / vào buổi sáng"}], triggers:["giới","giới từ","preposition","prep"]},
-                { id:"prep_n", category:"Prepositions", title:"Giới danh", formula:"Prep + N", tip:"Cụm thời gian/địa điểm thường dùng: in 1999, at school, on Monday…", examples:[{en:"in the morning", vi:"vào buổi sáng"}], triggers:["giới danh","prep noun","giới + danh"]},
-                { id:"prep_adj_n", category:"Prepositions", title:"Giới tính danh", formula:"Prep + Adj + N", tip:"Adj đứng trước N trong cụm giới từ.", examples:[{en:"in a difficult situation", vi:"trong một tình huống khó khăn"}], triggers:["giới tính danh","prep adj noun"]},
-                { id:"prep_ving", category:"Prepositions", title:"Giới V-ing", formula:"Prep + V-ing", tip:"by/without/after/before + V-ing.", examples:[{en:"by studying", vi:"bằng cách học"}], triggers:["giới v-ing","prep ving","giới + ving"]},
-                { id:"prep_ving_n", category:"Prepositions", title:"Giới V-ing danh", formula:"Prep + V-ing + N", tip:"Cụm V-ing đóng vai trò danh hoá sau giới từ.", examples:[{en:"by reading books", vi:"bằng cách đọc sách"}], triggers:["giới v-ing danh","prep ving noun"]},
-                { id:"prep_adv_ving_n", category:"Prepositions", title:"Giới trạng V-ing danh", formula:"Prep + Adv + V-ing + N", tip:"Adv (carefully, slowly, …) đứng trước V-ing.", examples:[{en:"by carefully reading the text", vi:"bằng cách đọc kỹ văn bản"}], triggers:["giới trạng v-ing danh","prep adv ving noun"]},
-                { id:"prep_n_prep", category:"Prepositions", title:"Giới danh giới", formula:"Prep + N + Prep (+ N)", tip:"Cấu trúc chuỗi: from A to B / between A and B.", examples:[{en:"from home to work", vi:"từ nhà đến chỗ làm"}], triggers:["giới danh giới","prep noun prep"]},
-                { id:"cond1", category:"Conditionals", title:"Điều kiện 1 (hiện thực)", formula:"If + S + V(present simple), S + will + V0", tip:"Có thể dùng can/may/should thay will; mệnh đề if KHÔNG dùng will.", examples:[{en:"If you study hard, you will pass the exam.", vi:"Nếu bạn học chăm, bạn sẽ đậu kỳ thi."}], triggers:["điều kiện 1","if 1","type 1","conditional 1","if+present, will+V0"]},
-                { id:"eq_adj", category:"Comparisons", title:"So sánh bằng (tính từ)", formula:"S + be + as + Adj + as + S + be", tip:"Dùng be ở cả hai vế nếu cần; có thể thêm not để phủ định.", examples:[{en:"She is as tall as her brother.", vi:"Cô ấy cao bằng anh trai."}], triggers:["so sánh bằng","as adj as","equal adj","equative adj"]},
-                { id:"eq_adv", category:"Comparisons", title:"So sánh bằng (trạng từ)", formula:"S + V + as + Adv + as + S + V", tip:"Động từ thường + as + adv + as; vế sau có thể dùng trợ động do/does/did.", examples:[{en:"He runs as fast as Tom does.", vi:"Cậu ấy chạy nhanh bằng Tom."}], triggers:["so sánh bằng trạng từ","as adv as","equal adv","equative adv"]},
-                { id:"gap_mid_adj", category:"Strategy", title:"Hở giữa — xài tính từ", formula:"Determiner + ___ + Noun", tip:"Ô trống giữa hạn định từ (a/an/the/this/that/my/some/…) và danh từ → 80% là **Adjective**.", examples:[{en:"a ___ book → a useful book", vi:"một ___ quyển sách → một quyển sách hữu ích"}], triggers:["hở giữa","gap giữa","gap middle","xài tính từ","sài tính từ","từ hạn định + … + noun"]},
-                { id:"gap_head_v_or_adv", category:"Strategy", title:"Hở đầu — xài động từ hoặc trạng từ", formula:"___ + Determiner + Noun", tip:"Trước cụm danh từ thường là **Verb** (mệnh lệnh/kể) hoặc **Adverb** toàn mệnh đề.", examples:[{en:"Please ___ the door. → Please open the door.", vi:"Làm ơn ___ cửa. → Làm ơn mở cửa."}], triggers:["hở đầu","gap đầu","xài động từ","xài trạng từ","… + từ hạn định + danh"]},
-                { id:"gap_after_adv", category:"Strategy", title:"Hở sau — ưu tiên trạng từ", formula:"Determiner + Noun + ___", tip:"Sau cụm danh từ, 80% rơi vào **Adverb** hoặc cụm giới từ bổ sung thông tin.", examples:[{en:"The train arrived ___. → The train arrived late.", vi:"Chuyến tàu đến ___ → Chuyến tàu đến trễ."}], triggers:["hở sau","gap sau","xài trạng từ đúng 80%","từ hạn định + danh + …"]},
-                { id:"after_transitive", category:"Strategy", title:"Sau ngoại động từ → danh từ/tân ngữ", formula:"Transitive V + (N/NP/Pronoun)", tip:"Ngoại động từ cần **tân ngữ**: need/buy/like/make/…", examples:[{en:"She needs help.", vi:"Cô ấy cần sự giúp đỡ."}], triggers:["sau ngoại động từ","transitive","Vt","object after verb"]},
-                { id:"after_intransitive", category:"Strategy", title:"Sau nội động từ → giới từ hoặc trạng từ", formula:"Intransitive V + (Prep-phrase / Adverb)", tip:"arrive/agree/happen/work/… không nhận tân ngữ trực tiếp.", examples:[{en:"He arrived at noon / He arrived late.", vi:"Anh ấy đến vào buổi trưa / Anh ấy đến trễ."}], triggers:["sau nội động từ","intransitive","Vi","giới từ hoặc trạng từ"]}
-            ];
-            const CHIPS = [
-                "mạo", "mạo danh", "mạo tính danh", "mạo trạng tính danh", "mạo tính tính danh", "mạo danh giới",
-                "giới", "giới danh", "giới tính danh", "giới V-ing", "giới V-ing danh", "giới trạng V-ing danh", "giới danh giới",
-                "điều kiện 1", "so sánh bằng", "hở giữa", "hở đầu", "hở sau", "sau ngoại động từ", "sau nội động từ"
-            ];
+      {/* Results */}
+      <main className="mx-auto max-w-6xl px-4 pb-12">
+        {q.trim() && results.length === 0 && (
+          <div className="text-center text-slate-500 py-16 text-xl">
+            Không có kết quả. Thử từ khóa khác hoặc dùng các chip gợi ý.
+          </div>
+        )}
 
-            const searchInput = document.getElementById('searchInput');
-            const chipsContainer = document.getElementById('chipsContainer');
-            const resultsContainer = document.getElementById('resultsContainer');
-            let debounceTimer;
+        {!q.trim() && (
+          <div className="text-center text-slate-500 py-16 text-xl">
+            Nhập từ khóa ở ô trên, hoặc chọn một chip để xem mẫu.
+          </div>
+        )}
 
-            function removeVietnameseDiacritics(str) {
-                if (!str) return '';
-                return str.normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').replace(/đ/g, "d").replace(/Đ/g, "D");
-            }
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {results.map((r) => {
+            const p = r.pattern;
+            const available = isPatternInCurrentGrammar(p);
+            return (
+              <article
+                key={p.id}
+                className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm hover:shadow-md transition"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="inline-flex items-center gap-2 text-base text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full">
+                    📚 {r.categoryTitle}
+                  </span>
+                  {!available && (
+                    <span className="text-sm text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                      KHÔNG KHẢ DỤNG VỚI ĐIỂM NGỮ PHÁP NÀY
+                    </span>
+                  )}
+                </div>
 
-            function highlightText(text, query) {
-                if (!query) return text;
-                const normalizedText = removeVietnameseDiacritics(text).toLowerCase();
-                const normalizedQuery = removeVietnameseDiacritics(query).toLowerCase();
-                if (!normalizedQuery) return text;
-                
-                let result = '';
-                let from = 0;
-                let idx = normalizedText.indexOf(normalizedQuery);
+                <h3 className="text-xl font-semibold text-slate-900">
+                  <Highlight text={p.label_vi} query={q} />
+                </h3>
 
-                while (idx !== -1) {
-                    result += text.slice(from, idx);
-                    result += '<mark>' + text.slice(idx, idx + normalizedQuery.length) + '</mark>';
-                    from = idx + normalizedQuery.length;
-                    idx = normalizedText.indexOf(normalizedQuery, from);
-                }
+                <code className="mt-1 block font-mono text-base text-blue-800 bg-blue-50 border border-blue-200 rounded px-2 py-1">
+                  <Highlight text={p.formula_en} query={q} />
+                </code>
 
-                result += text.slice(from);
-                return result;
-            }
-            
-            function renderResults(query) {
-                const normalizedQuery = removeVietnameseDiacritics(query).toLowerCase().trim();
-                const queryTerms = normalizedQuery.split(/\\s+/).filter(Boolean);
+                <p className="mt-2 text-base text-slate-700">
+                  <Highlight text={p.desc_vi} query={q} />
+                </p>
 
-                const filtered = PATTERNS.filter(pattern => {
-                    if (!normalizedQuery) return true; // Show initial suggestions if query is empty
-                    const normalizedTriggers = removeVietnameseDiacritics(pattern.triggers.join(' ')).toLowerCase();
-                    return queryTerms.every(term => normalizedTriggers.includes(term));
-                }).sort((a, b) => {
-                    if (!normalizedQuery) return 0;
-                    const aTriggers = removeVietnameseDiacritics(a.triggers.join(' ')).toLowerCase();
-                    const bTriggers = removeVietnameseDiacritics(b.triggers.join(' ')).toLowerCase();
-                    const scoreA = normalizedQuery.length / aTriggers.length;
-                    const scoreB = normalizedQuery.length / bTriggers.length;
-                    const aTitle = removeVietnameseDiacritics(a.title).toLowerCase();
-                    const bTitle = removeVietnameseDiacritics(b.title).toLowerCase();
-                    if (aTitle.startsWith(normalizedQuery)) return -1;
-                    if (bTitle.startsWith(normalizedQuery)) return 1;
-                    return scoreB - scoreA;
-                });
+                {p.examples?.length > 0 && (
+                  <ul className="mt-2 space-y-1 text-base text-slate-700 list-disc pl-5">
+                    {p.examples.slice(0, 3).map((ex, i) => (
+                      <li key={i}>{ex}</li>
+                    ))}
+                  </ul>
+                )}
 
-                const limitedResults = query ? filtered : filtered.slice(0, 12);
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {p.tags.map((t) => (
+                    <span
+                      key={t}
+                      className="text-sm text-slate-600 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full"
+                    >
+                      #{t}
+                    </span>
+                  ))}
+                  {typeof p.confidence === "number" && (
+                    <span className="text-sm text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full ml-auto">
+                      confidence: {(p.confidence * 100).toFixed(0)}%
+                    </span>
+                  )}
+                </div>
 
-                if (limitedResults.length === 0) {
-                    resultsContainer.innerHTML = '<div class="no-results"><h3>Không tìm thấy kết quả</h3><p>Hãy thử các từ khoá đơn giản hơn như "mạo", "so sánh", "điều kiện"...</p></div>';
-                    return;
-                }
-                
-                resultsContainer.innerHTML = limitedResults.map(pattern => {
-                    const tipHTML = pattern.tip.replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>');
-                    
-                    const examplesHTML = pattern.examples.map(ex => 
-                        '<div class="example">' +
-                            '<p class="example-en">' + highlightText(ex.en, query) + '</p>' +
-                            '<p class="example-vi">' + highlightText(ex.vi, query) + '</p>' +
-                        '</div>'
-                    ).join('');
+                <div className="mt-3 flex items-center gap-2">
+                  <button
+                    onClick={() => onCopyFormula(p.formula_en, p.id)}
+                    className={classNames(
+                      "inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-lg",
+                      copied === p.id
+                        ? "border-emerald-300 bg-emerald-50 text-emerald-800"
+                        : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+                    )}
+                  >
+                    {copied === p.id ? "✓ Copied" : "Copy công thức"}
+                  </button>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </main>
 
-                    return (
-                        '<div class="pattern-card">' +
-                            '<div class="card-header">' +
-                                '<h2 class="pattern-title">' + highlightText(pattern.title, query) + '</h2>' +
-                                '<span class="category-chip">' + pattern.category + '</span>' +
-                            '</div>' +
-                            '<div class="formula-container">' +
-                                '<code class="formula-code">' + highlightText(pattern.formula, query) + '</code>' +
-                                '<button class="copy-btn" data-formula="' + pattern.formula.replace(/"/g, '&quot;') + '">Copy</button>' +
-                            '</div>' +
-                            '<p class="pattern-tip">' + highlightText(tipHTML, query) + '</p>' +
-                            examplesHTML +
-                        '</div>'
-                    );
-                }).join('');
-            }
+      {/* ADMIN MODAL */}
+      {adminOpen && (
+        <div className="fixed inset-0 z-50">
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setAdminOpen(false)}
+          />
+          <div className="absolute inset-0 flex items-center justify-center p-4">
+            <div className="w-full max-w-6xl bg-white rounded-2xl shadow-2xl overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-3 border-b">
+                <h2 className="font-semibold text-xl">Quản trị “Giải đề”</h2>
+                <button
+                  className="rounded-lg border border-slate-300 px-3 py-1.5 text-lg hover:bg-slate-100"
+                  onClick={() => setAdminOpen(false)}
+                >
+                  Đóng
+                </button>
+              </div>
 
-            function renderChips() {
-                chipsContainer.innerHTML = CHIPS.map(chip => 
-                    '<button class="chip">' + chip + '</button>'
-                ).join('');
-            }
+              {!authed ? (
+                <div className="p-6 text-slate-600 text-xl">
+                  Bạn chưa đăng nhập. Đóng và bấm 🔧 ở header để nhập mật khẩu.
+                </div>
+              ) : (
+                <div className="grid grid-cols-12 gap-0">
+                  {/* Sidebar */}
+                  <aside className="col-span-4 border-r p-4 max-h-[75vh] overflow-auto">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-lg font-medium text-slate-800">
+                        Categories ({db.categories.length})
+                      </h3>
+                      <button
+                        className="text-lg rounded-lg border border-slate-300 px-2 py-1 hover:bg-slate-50"
+                        onClick={() => {
+                          const id = prompt("Nhập id (không dấu, duy nhất)");
+                          const title = id
+                            ? prompt("Tên hiển thị (vi):")
+                            : null;
+                          if (!id || !title) return;
+                          try {
+                            const next = addCategory(db, {
+                              id,
+                              title_vi: title,
+                              synonyms: [],
+                              patterns: [],
+                            });
+                            setDb(next);
+                            setSelectedCatId(id);
+                          } catch (e: any) {
+                            alert(e?.message || "Lỗi thêm category");
+                          }
+                        }}
+                      >
+                        + Thêm
+                      </button>
+                    </div>
 
-            function handleSearch() {
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(() => {
-                    renderResults(searchInput.value);
-                }, 200);
-            }
-            
-            function handleChipClick(e) {
-                if (e.target.classList.contains('chip')) {
-                    searchInput.value = e.target.textContent;
-                    renderResults(searchInput.value);
-                    searchInput.focus();
-                }
-            }
-            
-            function handleCopyClick(e) {
-                if (e.target.classList.contains('copy-btn')) {
-                    const formula = e.target.dataset.formula;
-                    navigator.clipboard.writeText(formula).then(() => {
-                        const originalText = e.target.textContent;
-                        e.target.textContent = 'Copied!';
-                        setTimeout(() => {
-                            e.target.textContent = originalText;
-                        }, 1200);
-                    }).catch(err => console.error('Failed to copy: ', err));
-                }
-            }
+                    <ul className="space-y-1">
+                      {db.categories.map((c) => (
+                        <li key={c.id}>
+                          <button
+                            onClick={() => setSelectedCatId(c.id)}
+                            className={classNames(
+                              "w-full text-left px-3 py-2 rounded-lg border",
+                              selectedCatId === c.id
+                                ? "bg-blue-50 border-blue-200 text-blue-800"
+                                : "bg-white border-slate-200 hover:bg-slate-50"
+                            )}
+                          >
+                            <div className="font-medium text-lg">{c.title_vi}</div>
+                            <div className="text-base text-slate-500">
+                              {c.id} • {c.patterns.length} mẫu
+                            </div>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </aside>
 
-            // Init
-            searchInput.addEventListener('input', handleSearch);
-            chipsContainer.addEventListener('click', handleChipClick);
-            resultsContainer.addEventListener('click', handleCopyClick);
-            
-            renderChips();
-            renderResults('');
-        })();
-    </script>
-</body>
-</html>
-`;
+                  {/* Editor */}
+                  <section className="col-span-8 p-4 max-h-[75vh] overflow-auto">
+                    {!selectedCat ? (
+                      <div className="text-slate-600 text-xl">Chọn 1 category ở trái.</div>
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <div className="grow">
+                            <label className="text-base text-slate-500">ID</label>
+                            <input
+                              className="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
+                              value={selectedCat.id}
+                              readOnly
+                            />
+                          </div>
+                          <div className="grow">
+                            <label className="text-base text-slate-500">Tên (vi)</label>
+                            <input
+                              className="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
+                              value={selectedCat.title_vi}
+                              onChange={(e) =>
+                                setDb(
+                                  updateCategory(db, selectedCat.id, (draft) => {
+                                    draft.title_vi = e.target.value;
+                                  })
+                                )
+                              }
+                            />
+                          </div>
+                          <button
+                            className="self-end rounded-lg border border-rose-300 bg-rose-50 text-rose-800 px-3 py-1.5 text-lg hover:bg-rose-100"
+                            onClick={() => {
+                              if (
+                                !confirm(
+                                  `Xóa category "${selectedCat.title_vi}"?`
+                                )
+                              )
+                                return;
+                              setDb(deleteCategory(db, selectedCat.id));
+                              setSelectedCatId(null);
+                            }}
+                          >
+                            Xóa category
+                          </button>
+                        </div>
 
-const SolvePage: React.FC = () => {
-  return (
-    <div className="w-full h-full">
-        <iframe
-            srcDoc={solvePageHtml}
-            className="w-full h-full border-0"
-            style={{ minHeight: '80vh' }}
-            title="Solve Page"
-            sandbox="allow-scripts allow-same-origin"
-        />
+                        <div className="mt-3">
+                          <label className="text-base text-slate-500">
+                            Synonyms (từ khóa, cách nhau bởi dấu phẩy)
+                          </label>
+                          <input
+                            className="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
+                            value={selectedCat.synonyms.join(", ")}
+                            onChange={(e) => {
+                              const arr = e.target.value
+                                .split(",")
+                                .map((x) => x.trim())
+                                .filter(Boolean);
+                              setDb(
+                                updateCategory(db, selectedCat.id, (d) => {
+                                  d.synonyms = arr;
+                                })
+                              );
+                            }}
+                          />
+                        </div>
+
+                        <div className="mt-4 flex items-center justify-between">
+                          <h4 className="text-lg font-medium">
+                            Patterns ({selectedCat.patterns.length})
+                          </h4>
+                          <button
+                            className="text-lg rounded-lg border border-slate-300 px-2 py-1 hover:bg-slate-50"
+                            onClick={() => {
+                              const id = prompt("ID pattern (duy nhất):");
+                              if (!id) return;
+                              setDb(
+                                upsertPattern(db, selectedCat.id, {
+                                  id,
+                                  label_vi: "nhãn (vi)",
+                                  formula_en: "formula",
+                                  desc_vi: "mô tả",
+                                  examples: [],
+                                  tags: [],
+                                })
+                              );
+                            }}
+                          >
+                            + Thêm pattern
+                          </button>
+                        </div>
+
+                        <div className="mt-2 space-y-3">
+                          {selectedCat.patterns.map((p) => (
+                            <div
+                              key={p.id}
+                              className="rounded-xl border border-slate-200 p-3"
+                            >
+                              <div className="flex items-center justify-between">
+                                <div className="font-medium text-lg">{p.id}</div>
+                                <button
+                                  className="text-lg rounded-lg border border-rose-300 bg-rose-50 text-rose-800 px-2 py-1 hover:bg-rose-100"
+                                  onClick={() =>
+                                    setDb(
+                                      deletePattern(db, selectedCat.id, p.id)
+                                    )
+                                  }
+                                >
+                                  Xóa
+                                </button>
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-2 mt-2">
+                                <label className="text-base text-slate-500 col-span-2">
+                                  Nhãn (vi)
+                                  <input
+                                    className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
+                                    value={p.label_vi}
+                                    onChange={(e) =>
+                                      setDb(
+                                        upsertPattern(db, selectedCat.id, {
+                                          ...p,
+                                          label_vi: e.target.value,
+                                        })
+                                      )
+                                    }
+                                  />
+                                </label>
+
+                                <label className="text-base text-slate-500">
+                                  Công thức (en)
+                                  <input
+                                    className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
+                                    value={p.formula_en}
+                                    onChange={(e) =>
+                                      setDb(
+                                        upsertPattern(db, selectedCat.id, {
+                                          ...p,
+                                          formula_en: e.target.value,
+                                        })
+                                      )
+                                    }
+                                  />
+                                </label>
+
+                                <label className="text-base text-slate-500">
+                                  Confidence (0–1, tùy chọn)
+                                  <input
+                                    type="number"
+                                    step="0.05"
+                                    min={0}
+                                    max={1}
+                                    className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
+                                    value={
+                                      typeof p.confidence === "number"
+                                        ? p.confidence
+                                        : ""
+                                    }
+                                    onChange={(e) =>
+                                      setDb(
+                                        upsertPattern(db, selectedCat.id, {
+                                          ...p,
+                                          confidence:
+                                            e.target.value === ""
+                                              ? undefined
+                                              : Number(e.target.value),
+                                        })
+                                      )
+                                    }
+                                  />
+                                </label>
+
+                                <label className="text-base text-slate-500 col-span-2">
+                                  Mô tả (vi)
+                                  <textarea
+                                    rows={2}
+                                    className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
+                                    value={p.desc_vi}
+                                    onChange={(e) =>
+                                      setDb(
+                                        upsertPattern(db, selectedCat.id, {
+                                          ...p,
+                                          desc_vi: e.target.value,
+                                        })
+                                      )
+                                    }
+                                  />
+                                </label>
+
+                                <label className="text-base text-slate-500 col-span-2">
+                                  Ví dụ (mỗi dòng 1 ví dụ)
+                                  <textarea
+                                    rows={2}
+                                    className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
+                                    value={p.examples.join("\n")}
+                                    onChange={(e) =>
+                                      setDb(
+                                        upsertPattern(db, selectedCat.id, {
+                                          ...p,
+                                          examples: e.target.value
+                                            .split("\n")
+                                            .map((x) => x.trim())
+                                            .filter(Boolean),
+                                        })
+                                      )
+                                    }
+                                  />
+                                </label>
+
+                                <label className="text-base text-slate-500 col-span-2">
+                                  Tags (phân tách bởi dấu phẩy)
+                                  <input
+                                    className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-lg"
+                                    value={p.tags.join(", ")}
+                                    onChange={(e) =>
+                                      setDb(
+                                        upsertPattern(db, selectedCat.id, {
+                                          ...p,
+                                          tags: e.target.value
+                                            .split(",")
+                                            .map((x) => x.trim())
+                                            .filter(Boolean),
+                                        })
+                                      )
+                                    }
+                                  />
+                                </label>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Import / Export / Reset */}
+                        <div className="mt-4 flex flex-wrap items-center gap-2">
+                          <button
+                            className="rounded-lg border border-slate-300 px-3 py-1.5 text-lg hover:bg-slate-50"
+                            onClick={() => {
+                              const data = exportJSON(db);
+                              const blob = new Blob([data], {
+                                type: "application/json;charset=utf-8",
+                              });
+                              const url = URL.createObjectURL(blob);
+                              const a = document.createElement("a");
+                              a.href = url;
+                              a.download = "giaide.json";
+                              a.click();
+                              URL.revokeObjectURL(url);
+                            }}
+                          >
+                            ⬇️ Export JSON
+                          </button>
+
+                          <button
+                            className="rounded-lg border border-slate-300 px-3 py-1.5 text-lg hover:bg-slate-50"
+                            onClick={() => {
+                              const raw = prompt(
+                                "Dán JSON vào đây (sẽ thay thế DB hiện tại):"
+                              );
+                              if (!raw) return;
+                              try {
+                                const next = importJSON(raw);
+                                setDb(next);
+                                alert("Import thành công!");
+                              } catch (e: any) {
+                                alert(e?.message || "JSON không hợp lệ");
+                              }
+                            }}
+                          >
+                            ⬆️ Import JSON
+                          </button>
+
+                          <button
+                            className="rounded-lg border border-amber-300 bg-amber-50 text-amber-900 px-3 py-1.5 text-lg hover:bg-amber-100"
+                            onClick={() => {
+                              if (
+                                confirm(
+                                  "Reset về dữ liệu mặc định? (Mất mọi chỉnh sửa)"
+                                )
+                              ) {
+                                hardReset();
+                                alert("Đã reset về mặc định.");
+                              }
+                            }}
+                          >
+                            ♻️ Reset mặc định
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </section>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
-};
-
-export default SolvePage;
+}

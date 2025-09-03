@@ -9,22 +9,22 @@ import SolvePage from './pages/SolvePage';
 const App: React.FC = () => {
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     `px-3 py-2 rounded-md text-base font-medium transition-colors ${
-      isActive ? 'bg-gray-900 text-white' : 'text-gray-500 hover:bg-gray-200 hover:text-gray-900'
+      isActive ? 'bg-indigo-600 text-white' : 'text-slate-500 hover:bg-slate-200 hover:text-slate-900'
     }`;
 
   return (
     <HashRouter>
-      <div className="min-h-screen flex flex-col font-sans bg-slate-50">
-        <header className="sticky top-0 bg-white/80 backdrop-blur-md shadow-sm z-50">
+      <div className="min-h-screen flex flex-col font-sans bg-transparent">
+        <header className="sticky top-0 bg-white/60 backdrop-blur-md shadow-sm z-50">
           <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
                     <NavLink to="/" className="flex items-center space-x-2">
-                        <svg className="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="h-8 w-8 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v11.494m-9-5.747h18"/>
                         </svg>
-                        <span className="font-bold text-xl text-gray-800">matcanban.com</span>
+                        <span className="font-bold text-xl text-slate-900">matcanban.com</span>
                     </NavLink>
                 </div>
               </div>
@@ -51,8 +51,8 @@ const App: React.FC = () => {
           </Routes>
         </main>
         
-        <footer className="bg-white border-t border-gray-200">
-            <div className="container mx-auto py-4 px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
+        <footer className="bg-transparent border-t border-slate-200">
+            <div className="container mx-auto py-4 px-4 sm:px-6 lg:px-8 text-center text-sm text-slate-500">
                 Made by <a href="#" className="font-semibold text-indigo-600 hover:underline">Thầy Nguyễn Tài</a>
             </div>
         </footer>

@@ -11,15 +11,20 @@ const FormulaChip: React.FC<Chip> = ({ label, formula, colors }) => {
       onClick={copy}
       title={`Copy: ${formula}`}
       className={[
-        'group relative w-full min-w-0 px-4 py-3 rounded-2xl',
-        'text-white font-extrabold shadow-lg transition-[transform,box-shadow] active:scale-95',
-        'ring-1 ring-white/20 bg-gradient-to-r', colors,
-        'flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 text-left'
+        'group relative w-full min-w-0 px-4 py-3 rounded-2xl text-white font-extrabold shadow-lg',
+        'transition-[transform,box-shadow] active:scale-95 ring-1 ring-white/20',
+        'bg-gradient-to-r', colors,
+        // Bố cục 2 dòng, label ở trên, formula ở dưới
+        'flex flex-col items-start gap-1 text-left'
       ].join(' ')}
     >
-      <span className="truncate">{label}</span>
-      <span className="hidden sm:inline ml-2 text-white/85 font-semibold">({formula})</span>
-      <span className="sm-hidden text-white/85 font-semibold text-xs leading-tight">({formula})</span>
+      {/* Chú giải (nhỏ hơn) */}
+      <span className="text-sm font-semibold text-white/80 truncate">{label}</span>
+      
+      {/* Công thức (lớn hơn, kế thừa extrabold) */}
+      <span className="truncate">{formula}</span>
+
+      {/* toast nhỏ khi copy */}
       {copied && (
         <span className="absolute -top-2 -right-2 text-[10px] px-2 py-0.5 rounded-full bg-black/70">Copied!</span>
       )}
@@ -103,41 +108,40 @@ export default function CorePresentPerfect(){
       <Section id="contrast" title="So sánh với Quá khứ đơn" emoji="⚖️">
         <ul className="list-disc pl-6">
           <li><b>HT Hoàn thành</b>: Không có thời gian xác định, liên quan đến hiện tại. — <i>I <u>have seen</u> that movie.</i> (Tôi biết nội dung phim).</li>
-          <li><b>Quá khứ đơn</b>: Có thời gian xác định, đã chấm dứt. — <i>I <u>saw</u> that movie last night.</i></li>
+          <li><b>Quá khứ đơn</b>: Có thời gian xác định trong quá khứ, đã chấm dứt. — <i>I <u>saw</u> that movie <b>last week</b>.</i></li>
         </ul>
       </Section>
 
       <Section id="pitfalls" title="Lỗi thường gặp" emoji="⚠️">
         <ol className="list-decimal pl-6">
-          <li>Dùng với thời gian quá khứ xác định. (❌ <i>I have finished my work yesterday</i>).</li>
-          <li>Chia sai V3 đối với động từ bất quy tắc.</li>
-          <li>Nhầm lẫn giữa <b>for</b> (khoảng thời gian) và <b>since</b> (mốc thời gian).</li>
-          <li>Dùng 'has' với I/you/we/they.</li>
+          <li>Dùng với thời gian quá khứ xác định. (❌ <i className="line-through">I have seen him yesterday.</i>)</li>
+          <li>Chia sai động từ V3 (Past Participle).</li>
+          <li>Chia sai <b>has/have</b> với chủ ngữ.</li>
         </ol>
       </Section>
 
       <Section id="examples" title="Ví dụ (EN–VI)" emoji="📝">
         <ol className="list-decimal pl-6 space-y-1">
-          <li>I <b>have lost</b> my keys. — Tôi <b>đã làm mất</b> chìa khóa rồi (bây giờ không có).</li>
-          <li>She <b>has lived</b> in London since 2010. — Cô ấy <b>đã sống</b> ở London từ năm 2010.</li>
-          <li>They <b>haven't finished</b> their project yet. — Họ <b>vẫn chưa làm xong</b> dự án.</li>
+          <li>I <b>have lost</b> my keys. — Tôi <b>đã làm mất</b> chìa khóa rồi. (kết quả: bây giờ không có chìa khóa)</li>
+          <li>She <b>has lived</b> in this city since 2010. — Cô ấy <b>đã sống</b> ở thành phố này từ năm 2010.</li>
           <li><b>Have</b> you <b>ever been</b> to Japan? — Bạn <b>đã bao giờ đến</b> Nhật Bản chưa?</li>
-          <li>He <b>has just left</b> the office. — Anh ấy <b>vừa mới rời</b> văn phòng.</li>
+          <li>He <b>hasn't finished</b> his homework yet. — Anh ấy <b>vẫn chưa làm xong</b> bài tập.</li>
+          <li>We <b>have just heard</b> the news. — Chúng tôi <b>vừa mới nghe</b> tin.</li>
         </ol>
       </Section>
 
       <Section id="drill" title="Bài tập nhanh (Quick Drill)" emoji="🎮">
         <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
-          <p className="font-semibold">A. Điền dạng đúng (has/have + V3):</p>
+          <p className="font-semibold">A. Điền dạng đúng của động từ:</p>
           <ol className="list-decimal pl-6">
-            <li>She ______ (read) that book several times.</li>
-            <li>We ______ (not see) him for ages.</li>
-            <li>They ______ (just/arrive) at the airport.</li>
+            <li>She ______ (not see) this film yet.</li>
+            <li>I ______ (already/eat) lunch.</li>
+            <li>They ______ (live) here for five years.</li>
           </ol>
           <p className="mt-3 font-semibold">B. Chọn thì đúng (HT Hoàn thành / Quá khứ đơn):</p>
           <ol className="list-decimal pl-6">
-            <li>I ______ (visit) my grandparents last weekend.</li>
-            <li>I ______ (never/visit) this museum before.</li>
+            <li>I ______ (see) him yesterday.</li>
+            <li>I ______ (never/see) him before.</li>
           </ol>
         </div>
       </Section>

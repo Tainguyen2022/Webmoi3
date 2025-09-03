@@ -80,30 +80,3 @@ export interface BugReport {
     message: string;
     userAgent: string;
 }
-
-// --- Types for Solve Engine ---
-// Fix: Added 'GER' to TokenType to support Gerunds.
-// Fix: Added 'N_MOD' and 'N_HEAD' to TokenType to support compound nouns and fix type errors.
-export type TokenType = 'ART' | 'ADJ' | 'ADV' | 'N' | 'V' | 'PREP' | 'CONJ' | 'EXTRA' | 'PATTERN' | 'GER' | 'N_MOD' | 'N_HEAD';
-export type AdjectiveCategory = 'opinion' | 'size' | 'age' | 'shape' | 'color' | 'origin' | 'material' | 'purpose';
-export type NounCountability = 'C' | 'U' | 'B'; // Countable, Uncountable, Both
-export type DeterminerConstraint = 'singular' | 'plural' | 'uncountable';
-
-export interface Token {
-  id: string;
-  type: TokenType;
-  vi: string;
-  en: string;
-  keywords?: string[];
-  // Optional, type-specific properties
-  category?: AdjectiveCategory; // For ADJ
-  countability?: NounCountability; // For N
-  irregularPlural?: string; // For N
-  constraint?: DeterminerConstraint; // For ART
-}
-
-export interface PatternToken extends Token {
-    type: 'PATTERN';
-    templateEN: string;
-    templateVI: string;
-}

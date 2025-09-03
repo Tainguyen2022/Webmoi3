@@ -60,8 +60,8 @@ const VocabModal: React.FC<{
                 onClick={e => e.stopPropagation()} // Prevent closing when clicking inside modal
             >
                 <header className="p-4 border-b flex items-center justify-between sticky top-0 bg-white rounded-t-2xl">
-                    <h3 className="text-lg font-bold">Chọn {wordType}</h3>
-                    <button onClick={onClose} className="text-gray-500 hover:text-gray-800 text-2xl font-bold">&times;</button>
+                    <h3 className="text-xl font-bold">Chọn {wordType}</h3>
+                    <button onClick={onClose} className="text-gray-500 hover:text-gray-800 text-3xl font-bold">&times;</button>
                 </header>
                 <div className="p-4">
                     <input
@@ -69,7 +69,7 @@ const VocabModal: React.FC<{
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
                         placeholder="Tìm kiếm từ..."
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg"
                         autoFocus
                     />
                 </div>
@@ -81,8 +81,8 @@ const VocabModal: React.FC<{
                                     onClick={() => handleSelect(item)}
                                     className="w-full text-left p-2 rounded-lg hover:bg-gray-100 transition-colors flex justify-between items-center"
                                 >
-                                    <span className="font-semibold text-gray-800">{item.base || item.word}</span>
-                                    <span className="text-sm text-gray-500">{item.vi}</span>
+                                    <span className="font-semibold text-gray-800 text-lg">{item.base || item.word}</span>
+                                    <span className="text-base text-gray-500">{item.vi}</span>
                                 </button>
                             </li>
                         ))}
@@ -100,7 +100,7 @@ const TopBar: React.FC<{
     const wordTypes = ['Động từ', 'Động từ BQT', 'Tính từ', 'Trạng từ', 'Danh từ', 'Giới từ', 'Liên từ'];
     
     const getButtonClass = (type: string) => {
-        const base = "px-4 py-2 rounded-lg shadow-sm text-sm font-semibold transition-colors";
+        const base = "px-4 py-2 rounded-lg shadow-sm text-base font-semibold transition-colors";
         if (type === activeType) {
             return `${base} bg-gray-800 text-white`;
         }
@@ -114,8 +114,8 @@ const TopBar: React.FC<{
                     {type}
                 </button>
             ))}
-            <button className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-white rounded-lg shadow-sm text-sm font-semibold hover:bg-gray-900 transition-colors">
-                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <button className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-white rounded-lg shadow-sm text-base font-semibold hover:bg-gray-900 transition-colors">
+                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                     <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                 </svg>
@@ -152,22 +152,22 @@ const SubjectVerbSelector: React.FC<{
     return (
         <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-                <label className="text-xs text-gray-500 font-bold uppercase">CHỦ NGỮ</label>
+                <label className="text-sm text-gray-500 font-bold uppercase">CHỦ NGỮ</label>
                 <select 
                     value={subject} 
                     onChange={(e) => onSubjectChange(e.target.value as Subject)}
-                    className="h-11 px-3 rounded-xl border border-gray-200 bg-white text-base shadow-sm focus:ring-2 focus:ring-indigo-500"
+                    className="h-11 px-3 rounded-xl border border-gray-200 bg-white text-lg shadow-sm focus:ring-2 focus:ring-indigo-500"
                 >
                     {subjects.map(s => <option key={s} value={s}>{subjectMap[s] || s}</option>)}
                 </select>
              </div>
              <div className="flex items-center gap-2">
-                <label className="text-xs text-gray-500 font-bold uppercase">{getLemmaLabel()}</label>
+                <label className="text-sm text-gray-500 font-bold uppercase">{getLemmaLabel()}</label>
                 <input 
                     type="text" 
                     value={lemma.text}
                     onChange={(e) => onLemmaChange({ ...lemma, text: e.target.value, base: e.target.value, vi: undefined })}
-                    className="h-11 w-36 px-3 rounded-xl border border-gray-200 bg-white text-base shadow-sm focus:ring-2 focus:ring-indigo-500" 
+                    className="h-11 w-36 px-3 rounded-xl border border-gray-200 bg-white text-lg shadow-sm focus:ring-2 focus:ring-indigo-500" 
                 />
              </div>
         </div>
@@ -180,7 +180,7 @@ const HeroZone: React.FC<{ en: string; vi: string; debug: string; error: string 
         return (
              <div className="text-center p-6 bg-white rounded-lg shadow-sm min-h-[180px] flex flex-col justify-center items-center">
                 <div className="px-4 py-3 bg-yellow-100 text-yellow-800 rounded-lg border border-yellow-300">
-                    <p className="font-bold text-lg">{error}</p>
+                    <p className="font-bold text-xl">{error}</p>
                 </div>
             </div>
         );
@@ -190,9 +190,9 @@ const HeroZone: React.FC<{ en: string; vi: string; debug: string; error: string 
     if (lemma.type !== 'verb' || !en) {
          return (
             <div className="text-center p-6 bg-white rounded-lg shadow-sm min-h-[180px] flex flex-col justify-center items-center">
-                <p className="text-4xl md:text-5xl font-bold text-gray-800 break-words">{en}</p>
-                <p className="text-lg text-gray-600 mt-4">{vi}</p>
-                <p className="text-xs text-gray-400 mt-4 absolute bottom-3 right-4">{debug}</p>
+                <p className="text-5xl md:text-6xl font-bold text-gray-800 break-words">{en}</p>
+                <p className="text-xl text-gray-600 mt-4">{vi}</p>
+                <p className="text-sm text-gray-400 mt-4 absolute bottom-3 right-4">{debug}</p>
             </div>
         );
     }
@@ -234,11 +234,11 @@ const HeroZone: React.FC<{ en: string; vi: string; debug: string; error: string 
     return (
         <div className="text-center p-6 bg-white rounded-lg shadow-sm min-h-[180px] flex flex-col justify-center items-center">
             <p 
-                className="text-5xl md:text-7xl font-bold text-gray-800 break-words" 
+                className="text-6xl md:text-8xl font-bold text-gray-800 break-words" 
                 dangerouslySetInnerHTML={{ __html: sentenceHtml }} 
             />
-            <p className="text-xl text-gray-600 mt-4">{vi}</p>
-            <p className="text-xs text-gray-400 mt-4 absolute bottom-3 right-4">{debug}</p>
+            <p className="text-2xl text-gray-600 mt-4">{vi}</p>
+            <p className="text-sm text-gray-400 mt-4 absolute bottom-3 right-4">{debug}</p>
         </div>
     );
 };
@@ -253,7 +253,7 @@ const Controls: React.FC<{
 }> = ({ flags, onFlagChange, shortForm, setShortForm, compact, setCompact }) => {
     const getBtnClass = (group: string, isActive: boolean) => {
         // Base styles for all buttons, including smooth transitions for animations
-        const base = `flex-shrink-0 appearance-none px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ease-in-out transform whitespace-nowrap leading-none focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`;
+        const base = `flex-shrink-0 appearance-none px-4 py-2 rounded-xl text-base font-semibold transition-all duration-200 ease-in-out transform whitespace-nowrap leading-none focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`;
 
         if (isActive) {
             // Active state styles: colorful gradient, scaled up, and a prominent shadow.
@@ -329,8 +329,8 @@ const Controls: React.FC<{
 const ColumnCard: React.FC<{ title: string; count: number; children: React.ReactNode }> = ({ title, count, children }) => (
     <div className="bg-white p-4 rounded-lg shadow-sm h-full flex flex-col">
         <div className="flex items-center justify-between mb-2 pb-2 border-b">
-            <h2 className="text-md font-bold text-gray-800">{title}</h2>
-            {count > 0 && <span className="bg-blue-500 text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full">{count}</span>}
+            <h2 className="text-xl font-bold text-gray-800">{title}</h2>
+            {count > 0 && <span className="bg-blue-500 text-white text-sm font-bold w-6 h-6 flex items-center justify-center rounded-full">{count}</span>}
         </div>
         <div className="flex-grow overflow-y-auto pr-2 -mr-2" style={{ scrollbarWidth: 'thin' }}>
              {children}
@@ -344,9 +344,9 @@ const GroupsColumn: React.FC<{ onSelect: (groupId: number) => void; selectedId: 
             {groups.map((g, index) => ( 
                 <li key={g.id} 
                     onClick={() => onSelect(g.id)}
-                    className={`cursor-pointer p-2 rounded-lg transition-colors text-sm flex items-start gap-3 ${selectedId === g.id ? 'bg-blue-100 border border-blue-300 font-semibold text-blue-800' : 'hover:bg-gray-100'}`}>
-                    <span className="flex-shrink-0 mt-0.5 text-xs text-gray-500">{index + 1}.</span>
-                    <span>{g.vi}<br/><span className="text-xs text-gray-500">{g.en}</span></span>
+                    className={`cursor-pointer p-2 rounded-lg transition-colors text-base flex items-start gap-3 ${selectedId === g.id ? 'bg-blue-100 border border-blue-300 font-semibold text-blue-800' : 'hover:bg-gray-100'}`}>
+                    <span className="flex-shrink-0 mt-0.5 text-sm text-gray-500">{index + 1}.</span>
+                    <span>{g.vi}<br/><span className="text-sm text-gray-500">{g.en}</span></span>
                 </li>
             ))}
         </ul>
@@ -361,9 +361,9 @@ const UnitsColumn: React.FC<{ selectedGroupId: number | null; onSelect: (unit: U
                 {filteredUnits.map((u, index) => (
                     <li key={u.id} 
                         onClick={() => onSelect(u)}
-                        className={`cursor-pointer p-2 rounded-lg transition-colors text-sm flex items-start gap-3 ${selectedId === u.id ? 'bg-blue-100 border border-blue-300 font-semibold text-blue-800' : 'hover:bg-gray-100'}`}>
-                        <span className="flex-shrink-0 mt-0.5 text-xs text-gray-500">{index + 1}.</span>
-                        <span>{u.vi}<br/><span className="text-xs text-gray-500">{u.en}</span></span>
+                        className={`cursor-pointer p-2 rounded-lg transition-colors text-base flex items-start gap-3 ${selectedId === u.id ? 'bg-blue-100 border border-blue-300 font-semibold text-blue-800' : 'hover:bg-gray-100'}`}>
+                        <span className="flex-shrink-0 mt-0.5 text-sm text-gray-500">{index + 1}.</span>
+                        <span>{u.vi}<br/><span className="text-sm text-gray-500">{u.en}</span></span>
                     </li>
                 ))}
             </ul>
@@ -381,11 +381,11 @@ const CoreKnowledgeColumn: React.FC<{
     
     const controls = (
         <div className="flex items-center space-x-1">
-            <button onClick={onDecrease} className="px-2 py-0.5 text-lg rounded-md hover:bg-gray-200 transition-colors">-</button>
-            <span className="text-sm font-semibold w-6 text-center">{fontSize}</span>
-            <button onClick={onIncrease} className="px-2 py-0.5 text-lg rounded-md hover:bg-gray-200 transition-colors">+</button>
+            <button onClick={onDecrease} className="px-2 py-0.5 text-xl rounded-md hover:bg-gray-200 transition-colors">-</button>
+            <span className="text-base font-semibold w-6 text-center">{fontSize}</span>
+            <button onClick={onIncrease} className="px-2 py-0.5 text-xl rounded-md hover:bg-gray-200 transition-colors">+</button>
             <button onClick={onToggleFullScreen} className="p-1 rounded-md hover:bg-gray-200 transition-colors ml-2" title="Full Screen">
-                <ArrowsPointingOutIcon className="w-5 h-5 text-gray-600" />
+                <ArrowsPointingOutIcon className="w-6 h-6 text-gray-600" />
             </button>
         </div>
     );
@@ -393,7 +393,7 @@ const CoreKnowledgeColumn: React.FC<{
     return (
         <div className="bg-white p-4 rounded-lg shadow-sm h-full flex flex-col">
             <div className="flex items-center justify-between mb-2 pb-2 border-b">
-                <h2 className="text-md font-bold text-gray-800">Kiến Thức Cốt Lõi</h2>
+                <h2 className="text-xl font-bold text-gray-800">Kiến Thức Cốt Lõi</h2>
                 {controls}
             </div>
             <div 
@@ -401,9 +401,9 @@ const CoreKnowledgeColumn: React.FC<{
                 style={{ scrollbarWidth: 'thin', fontSize: `${fontSize}px` }}
             >
                 {!unit ? (
-                    <div className="h-full flex flex-col items-center justify-center text-center text-gray-500" style={{fontSize: '16px'}}>
-                        <h3 className="font-bold text-lg">Chưa chọn đơn vị ngữ pháp</h3>
-                        <p className="text-sm">Chọn một đơn vị để xem kiến thức cốt lõi</p>
+                    <div className="h-full flex flex-col items-center justify-center text-center text-gray-500" style={{fontSize: '19px'}}>
+                        <h3 className="font-bold text-xl">Chưa chọn đơn vị ngữ pháp</h3>
+                        <p className="text-base">Chọn một đơn vị để xem kiến thức cốt lõi</p>
                     </div>
                 ) : (
                     <CoreHost canonKey={unit?.canonKey} />
@@ -425,20 +425,20 @@ const FullScreenCoreKnowledge: React.FC<{
 
     const controls = (
         <div className="flex items-center space-x-2">
-            <button onClick={onDecrease} className="px-3 py-1 text-lg rounded-md hover:bg-gray-200 transition-colors">-</button>
-            <span className="text-sm font-semibold w-8 text-center">{fontSize}</span>
-            <button onClick={onIncrease} className="px-3 py-1 text-lg rounded-md hover:bg-gray-200 transition-colors">+</button>
+            <button onClick={onDecrease} className="px-3 py-1 text-xl rounded-md hover:bg-gray-200 transition-colors">-</button>
+            <span className="text-base font-semibold w-8 text-center">{fontSize}</span>
+            <button onClick={onIncrease} className="px-3 py-1 text-xl rounded-md hover:bg-gray-200 transition-colors">+</button>
         </div>
     );
 
     return (
         <div className="fixed inset-0 bg-white z-[60] p-4 sm:p-6 lg:p-8 flex flex-col">
             <header className="flex-shrink-0 flex justify-between items-center mb-4 pb-4 border-b">
-                <h2 className="text-xl font-bold text-gray-800">{unit?.vi || 'Kiến Thức Cốt Lõi'}</h2>
+                <h2 className="text-2xl font-bold text-gray-800">{unit?.vi || 'Kiến Thức Cốt Lõi'}</h2>
                 <div className="flex items-center gap-4">
                     {controls}
-                    <button onClick={onClose} className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-800 font-semibold rounded-lg hover:bg-gray-200 transition-colors">
-                        <XMarkIcon className="w-5 h-5" />
+                    <button onClick={onClose} className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-800 font-semibold rounded-lg hover:bg-gray-200 transition-colors text-lg">
+                        <XMarkIcon className="w-6 h-6" />
                         Thu gọn
                     </button>
                 </div>
@@ -459,7 +459,7 @@ const GrammarPage: React.FC = () => {
     const [selectedGroupId, setSelectedGroupId] = useState<number | null>(1);
     const [shortForm, setShortForm] = useState(true);
     const [compact, setCompact] = useState(false);
-    const [coreFontSize, setCoreFontSize] = useState(16);
+    const [coreFontSize, setCoreFontSize] = useState(19);
     
     const [isVocabModalOpen, setIsVocabModalOpen] = useState(false);
     const [activeVocabType, setActiveVocabType] = useState<string | null>(null);
