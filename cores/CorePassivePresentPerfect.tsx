@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 
 // Reusing the FormulaChip component structure from other cores for consistency
@@ -20,7 +21,6 @@ const FormulaChip: React.FC<Chip> = ({ label, formula, colors }) => {
     >
       <span className="truncate">{label}</span>
       <span className="hidden sm:inline ml-2 text-white/85 font-semibold">({formula})</span>
-      {/* Fix: Corrected Tailwind CSS typo from sm-hidden to sm:hidden */}
       <span className="sm:hidden text-white/85 font-semibold text-xs leading-tight">({formula})</span>
       {copied && (
         <span className="absolute -top-2 -right-2 text-[10px] px-2 py-0.5 rounded-full bg-black/70">Copied!</span>
@@ -46,7 +46,6 @@ export default function CorePassivePresentPerfect(){
     <div className="font-[Inter,ui-sans-serif]">
       {/* HERO */}
       <div className="rounded-3xl p-6 md:p-8 border border-black/10 bg-white shadow-sm">
-        {/* Fix: Corrected Tailwind CSS typo */}
         <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
         ⚙️ <span className="underline decoration-4 decoration-amber-400">BỊ ĐỘNG HT HOÀN THÀNH</span> — <i>Passive (Present Perfect)</i>
         </h1>

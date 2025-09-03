@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 
 // Reusing the FormulaChip component structure from other cores for consistency
@@ -20,7 +21,6 @@ const FormulaChip: React.FC<Chip> = ({ label, formula, colors }) => {
     >
       <span className="truncate">{label}</span>
       <span className="hidden sm:inline ml-2 text-white/85 font-semibold">({formula})</span>
-      {/* Fix: Corrected Tailwind CSS typo from sm-hidden to sm:hidden */}
       <span className="sm:hidden text-white/85 font-semibold text-xs leading-tight">({formula})</span>
       {copied && (
         <span className="absolute -top-2 -right-2 text-[10px] px-2 py-0.5 rounded-full bg-black/70">Copied!</span>
@@ -55,7 +55,7 @@ export default function CorePassiveFuturePerfect(){
         {/* FORMULA CHIPS */}
         <div className="mt-5 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
           <FormulaChip label="Khẳng định" formula="S + will have been + V3" colors="from-sky-500 via-blue-500 to-indigo-600"/>
-          <FormulaChip label="Phủ định" formula="S + will not have been + V3" colors="from-rose-500 via-red-500 to-orange-500"/>
+          <FormulaChip label="Phủ định" formula="S + won't have been + V3" colors="from-rose-500 via-red-500 to-orange-500"/>
           <FormulaChip label="Nghi vấn" formula="Will + S + have been + V3?" colors="from-emerald-500 via-lime-500 to-amber-500"/>
         </div>
 

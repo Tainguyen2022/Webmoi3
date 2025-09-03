@@ -15,12 +15,16 @@ const FormulaChip: React.FC<Chip> = ({ label, formula, colors }) => {
         'group relative w-full min-w-0 px-4 py-3 rounded-2xl',
         'text-white font-extrabold shadow-lg transition-[transform,box-shadow] active:scale-95',
         'ring-1 ring-white/20 bg-gradient-to-r', colors,
-        'flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 text-left'
+        'flex flex-col items-start gap-1 text-left'
       ].join(' ')}
     >
-      <span className="truncate">{label}</span>
-      <span className="hidden sm:inline ml-2 text-white/85 font-semibold">({formula})</span>
-      <span className="sm:hidden text-white/85 font-semibold text-xs leading-tight">({formula})</span>
+      {/* Chú giải (nhỏ hơn) */}
+      <span className="text-sm font-semibold text-white/80 truncate">{label}</span>
+      
+      {/* Công thức (lớn hơn, kế thừa extrabold) */}
+      <span className="truncate">{formula}</span>
+
+      {/* toast nhỏ khi copy */}
       {copied && (
         <span className="absolute -top-2 -right-2 text-[10px] px-2 py-0.5 rounded-full bg-black/70">Copied!</span>
       )}
@@ -54,9 +58,9 @@ export default function CoreConditionalInversion2() {
 
         {/* FORMULA CHIPS */}
         <div className="mt-5 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
-          <FormulaChip label="Đảo ngữ (V thường)" formula="Were + S + to V, S + would + V" colors="from-indigo-500 via-sky-500 to-cyan-500"/>
-          <FormulaChip label="Đảo ngữ (to be)" formula="Were + S + ..., S + would + V" colors="from-rose-500 via-pink-500 to-fuchsia-600"/>
-          <FormulaChip label="Câu gốc (If)" formula="If + S + V2/were, S + would + V" colors="from-emerald-500 via-lime-500 to-amber-500"/>
+          <FormulaChip label="Đảo ngữ (V thường)" formula="Were + S + to V-bare, S + would + V-bare" colors="from-indigo-500 via-sky-500 to-cyan-500"/>
+          <FormulaChip label="Đảo ngữ (to be)" formula="Were + S + ..., S + would + V-bare" colors="from-rose-500 via-pink-500 to-fuchsia-600"/>
+          <FormulaChip label="Câu gốc (If)" formula="If + S + V2/were, S + would + V-bare" colors="from-emerald-500 via-lime-500 to-amber-500"/>
         </div>
 
         {/* TOC */}

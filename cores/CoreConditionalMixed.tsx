@@ -15,12 +15,16 @@ const FormulaChip: React.FC<Chip> = ({ label, formula, colors }) => {
         'group relative w-full min-w-0 px-4 py-3 rounded-2xl',
         'text-white font-extrabold shadow-lg transition-[transform,box-shadow] active:scale-95',
         'ring-1 ring-white/20 bg-gradient-to-r', colors,
-        'flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 text-left'
+        'flex flex-col items-start gap-1 text-left'
       ].join(' ')}
     >
-      <span className="truncate">{label}</span>
-      <span className="hidden sm:inline ml-2 text-white/85 font-semibold">({formula})</span>
-      <span className="sm:hidden text-white/85 font-semibold text-xs leading-tight">({formula})</span>
+      {/* Chú giải (nhỏ hơn) */}
+      <span className="text-sm font-semibold text-white/80 truncate">{label}</span>
+      
+      {/* Công thức (lớn hơn, kế thừa extrabold) */}
+      <span className="truncate">{formula}</span>
+
+      {/* toast nhỏ khi copy */}
       {copied && (
         <span className="absolute -top-2 -right-2 text-[10px] px-2 py-0.5 rounded-full bg-black/70">Copied!</span>
       )}
@@ -45,7 +49,6 @@ export default function CoreConditionalMixed() {
     <div className="font-[Inter,ui-sans-serif]">
       {/* HERO */}
       <div className="rounded-3xl p-6 md:p-8 border border-black/10 bg-white shadow-sm">
-        {/* Fix: Corrected Tailwind CSS typo from md:text-4dl to md:text-4xl and fixed broken emoji. */}
         <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
          🔀 <span className="underline decoration-4 decoration-amber-400">CÂU ĐIỀU KIỆN HỖN HỢP</span> — <i>Mixed Conditionals</i>
         </h1>
@@ -55,8 +58,8 @@ export default function CoreConditionalMixed() {
 
         {/* FORMULA CHIPS */}
         <div className="mt-5 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
-          <FormulaChip label="Loại 3 → 2 (Phổ biến)" formula="If + had + V3, S + would + V(bare)" colors="from-indigo-500 via-sky-500 to-cyan-500"/>
-          <FormulaChip label="Loại 2 → 3 (Ít phổ biến)" formula="If + V2/V-ed, S + would have + V3" colors="from-rose-500 via-pink-500 to-fuchsia-600"/>
+          <FormulaChip label="Loại 3 → 2" formula="If + had + V3, S + would + V-bare" colors="from-indigo-500 via-sky-500 to-cyan-500"/>
+          <FormulaChip label="Loại 2 → 3" formula="If + V2/V-ed, S + would have + V3" colors="from-rose-500 via-pink-500 to-fuchsia-600"/>
         </div>
 
         {/* TOC */}

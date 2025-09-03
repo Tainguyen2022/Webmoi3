@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 
 // Reusing the FormulaChip component structure from other cores for consistency
@@ -50,7 +51,6 @@ export default function CoreAdjectivePositionPredicative() {
     <div className="font-[Inter,ui-sans-serif]">
       {/* HERO */}
       <div className="rounded-3xl p-6 md:p-8 border border-black/10 bg-white shadow-sm">
-        {/* Fix: Corrected Tailwind CSS typo from 'md:text-4dl' to 'md:text-4xl'. */}
         <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
         🎨 <span className="underline decoration-4 decoration-amber-400">VỊ TRÍ VỊ NGỮ</span> — <i>Predicative Position</i>
         </h1>
@@ -136,15 +136,13 @@ export default function CoreAdjectivePositionPredicative() {
 
       <Section id="drill" title="Bài tập nhanh (Quick Drill)" emoji="🎮">
         <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
-          <p className="font-semibold">A. Gạch chân tính từ vị ngữ trong các câu sau:</p>
+          <p className="font-semibold mt-3">A. Gạch chân tính từ vị ngữ trong các câu sau:</p>
           <ol className="list-decimal pl-6 mt-2 space-y-2">
             <li>The soup smells delicious.</li>
             <li>Her story proved false.</li>
           </ol>
            <p className="font-semibold mt-3">B. Viết lại câu sau, chuyển tính từ từ vị trí thuộc tính sang vị trí vị ngữ:</p>
-           {/* Fix: Changed start="3" to start={3} to provide a number instead of a string, resolving the TypeScript error. */}
            <ol className="list-decimal pl-6 mt-2 space-y-2" start={3}>
-            {/* Fix: Removed invalid 'start' attribute from <li> element. It is redundant as <ol> already sets the starting number. */}
             <li>This is a difficult exercise.
             <br/>→ This exercise is ______.</li>
            </ol>

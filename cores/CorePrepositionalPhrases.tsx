@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 
 // Reusing the FormulaChip component structure from other cores for consistency
@@ -45,7 +46,6 @@ export default function CorePrepositionalPhrases() {
     <div className="font-[Inter,ui-sans-serif]">
       {/* HERO */}
       <div className="rounded-3xl p-6 md:p-8 border border-black/10 bg-white shadow-sm">
-        {/* Fix: Corrected Tailwind CSS typo */}
         <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
         ⛓️ <span className="underline decoration-4 decoration-amber-400">CỤM GIỚI TỪ</span> — <i>Prepositional Phrases</i>
         </h1>

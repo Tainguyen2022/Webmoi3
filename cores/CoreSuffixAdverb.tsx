@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 
 // Reusing the FormulaChip component structure from other cores for consistency
@@ -31,7 +32,6 @@ const FormulaChip: React.FC<Chip> = ({ label, formula, colors }) => {
 // Reusing the Section component
 const Section: React.FC<{id:string; title:string; emoji?:string; children: React.ReactNode}> = ({id,title,emoji,children}) => (
   <section id={id} className="scroll-mt-28">
-    {/* Fix: Corrected Tailwind CSS typo from md:text-3dl to md:text-3xl */}
     <h2 className="mt-10 text-2xl md:text-3xl font-extrabold tracking-tight">
       <span className="text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-600 via-rose-600 to-orange-500">
         {emoji} {title}
@@ -46,7 +46,6 @@ export default function CoreSuffixAdverb() {
     <div className="font-[Inter,ui-sans-serif]">
       {/* HERO */}
       <div className="rounded-3xl p-6 md:p-8 border border-black/10 bg-white shadow-sm">
-        {/* Fix: Corrected Tailwind CSS typo from md:text-4dl to md:text-4xl */}
         <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
         🏃‍♀️ <span className="underline decoration-4 decoration-amber-400">HẬU TỐ TRẠNG TỪ</span> — <i>Adverb Suffixes</i>
         </h1>

@@ -1,5 +1,5 @@
 {
-  "name": "copy-of-matcanban.com-grammar-studio",
+  "name": "grammar-studio-2026",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -11,7 +11,8 @@
   "dependencies": {
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.8.2",
-    "react": "^19.1.1"
+    "react": "^19.1.1",
+    "@google/genai": "^1.16.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

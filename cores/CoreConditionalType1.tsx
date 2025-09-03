@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 
-// Reusing the FormulaChip component structure from other cores for consistency
 type Chip = { label: string; formula: string; colors: string };
 const FormulaChip: React.FC<Chip> = ({ label, formula, colors }) => {
   const [copied, setCopied] = useState(false);
@@ -12,15 +11,20 @@ const FormulaChip: React.FC<Chip> = ({ label, formula, colors }) => {
       onClick={copy}
       title={`Copy: ${formula}`}
       className={[
-        'group relative w-full min-w-0 px-4 py-3 rounded-2xl',
-        'text-white font-extrabold shadow-lg transition-[transform,box-shadow] active:scale-95',
-        'ring-1 ring-white/20 bg-gradient-to-r', colors,
-        'flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 text-left'
+        'group relative w-full min-w-0 px-4 py-3 rounded-2xl text-white font-extrabold shadow-lg',
+        'transition-[transform,box-shadow] active:scale-95 ring-1 ring-white/20',
+        'bg-gradient-to-r', colors,
+        // Bố cục 2 dòng, label ở trên, formula ở dưới
+        'flex flex-col items-start gap-1 text-left'
       ].join(' ')}
     >
-      <span className="truncate">{label}</span>
-      <span className="hidden sm:inline ml-2 text-white/85 font-semibold">({formula})</span>
-      <span className="sm:hidden text-white/85 font-semibold text-xs leading-tight">({formula})</span>
+      {/* Chú giải (nhỏ hơn) */}
+      <span className="text-sm font-semibold text-white/80 truncate">{label}</span>
+      
+      {/* Công thức (lớn hơn, kế thừa extrabold) */}
+      <span className="truncate">{formula}</span>
+
+      {/* toast nhỏ khi copy */}
       {copied && (
         <span className="absolute -top-2 -right-2 text-[10px] px-2 py-0.5 rounded-full bg-black/70">Copied!</span>
       )}
@@ -28,7 +32,7 @@ const FormulaChip: React.FC<Chip> = ({ label, formula, colors }) => {
   );
 };
 
-// Reusing the Section component
+
 const Section: React.FC<{id:string; title:string; emoji?:string; children: React.ReactNode}> = ({id,title,emoji,children}) => (
   <section id={id} className="scroll-mt-28">
     <h2 className="mt-10 text-2xl md:text-3xl font-extrabold tracking-tight">
@@ -40,7 +44,7 @@ const Section: React.FC<{id:string; title:string; emoji?:string; children: React
   </section>
 );
 
-export default function CoreConditionalType1() {
+export default function CoreConditionalType1(){
   return (
     <div className="font-[Inter,ui-sans-serif]">
       {/* HERO */}
@@ -54,9 +58,9 @@ export default function CoreConditionalType1() {
 
         {/* FORMULA CHIPS */}
         <div className="mt-5 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
-          <FormulaChip label="Cấu trúc chính" formula="If + S + V(s/es), S + will + V(bare)" colors="from-indigo-500 via-sky-500 to-cyan-500"/>
-          <FormulaChip label="Đảo mệnh đề" formula="S + will + V(bare) if + S + V(s/es)" colors="from-emerald-500 via-lime-500 to-amber-500"/>
-          <FormulaChip label="Đảo ngữ" formula="Should + S + V(bare), S + will + V(bare)" colors="from-rose-500 via-pink-500 to-fuchsia-600"/>
+          <FormulaChip label="Cấu trúc chính" formula="If + S + V-s/es, S + will + V-bare" colors="from-indigo-500 via-sky-500 to-cyan-500"/>
+          <FormulaChip label="Đảo mệnh đề" formula="S + will + V-bare if + S + V-s/es" colors="from-emerald-500 via-lime-500 to-amber-500"/>
+          <FormulaChip label="Đảo ngữ" formula="Should + S + V-bare, S + will + V-bare" colors="from-rose-500 via-pink-500 to-fuchsia-600"/>
         </div>
 
         {/* TOC */}

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 
-// Reusing the FormulaChip component structure from other cores for consistency
 type Chip = { label: string; formula: string; colors: string };
 const FormulaChip: React.FC<Chip> = ({ label, formula, colors }) => {
   const [copied, setCopied] = useState(false);

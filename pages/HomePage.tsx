@@ -1,5 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+// FIX: The named import from 'react-router-dom' was not being found.
+// Switched to a namespace import to resolve potential module resolution issues.
+import * as ReactRouterDOM from 'react-router-dom';
 import { getNews } from '../services/newsService';
 import { NewsArticle } from '../types';
 
@@ -76,14 +79,14 @@ const HomePage: React.FC = () => {
                         Nền tảng học ngữ pháp tiếng Anh thông minh, trực quan và hiệu quả.
                     </p>
                     <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link to="/grammar" className="text-xl flex items-center gap-2 px-8 py-4 bg-indigo-600 text-white font-semibold rounded-full shadow-lg shadow-indigo-500/30 hover:bg-indigo-700 transition-all duration-300 transform hover:scale-105">
+                        <ReactRouterDOM.Link to="/grammar" className="text-xl flex items-center gap-2 px-8 py-4 bg-indigo-600 text-white font-semibold rounded-full shadow-lg shadow-indigo-500/30 hover:bg-indigo-700 transition-all duration-300 transform hover:scale-105">
                             <BookOpenIcon />
                             Bắt đầu học
-                        </Link>
-                        <Link to="/news" className="text-xl flex items-center gap-2 px-8 py-4 bg-white/50 border border-slate-300 text-slate-700 font-semibold rounded-full shadow-lg backdrop-blur-sm hover:bg-white/80 transition-all duration-300 transform hover:scale-105">
+                        </ReactRouterDOM.Link>
+                        <ReactRouterDOM.Link to="/news" className="text-xl flex items-center gap-2 px-8 py-4 bg-white/50 border border-slate-300 text-slate-700 font-semibold rounded-full shadow-lg backdrop-blur-sm hover:bg-white/80 transition-all duration-300 transform hover:scale-105">
                             <NewspaperIcon />
                             Tin tức song ngữ
-                        </Link>
+                        </ReactRouterDOM.Link>
                     </div>
                 </div>
             </section>
@@ -110,7 +113,7 @@ const HomePage: React.FC = () => {
                 <h2 className="text-5xl font-bold text-slate-900 mb-10 text-center">Bài nổi bật</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {featuredArticles.map((article) => (
-                        <Link to="/news" key={article.id} className="group relative bg-white border border-slate-200 rounded-2xl shadow-lg transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1 overflow-hidden">
+                        <ReactRouterDOM.Link to="/news" key={article.id} className="group relative bg-white border border-slate-200 rounded-2xl shadow-lg transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1 overflow-hidden">
                              <img src={article.thumbnail} alt={article.title_vi} className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300" />
                              <div className="p-4">
                                 <h3 className="font-bold text-slate-800 group-hover:text-indigo-600 transition-colors text-xl">
@@ -120,7 +123,7 @@ const HomePage: React.FC = () => {
                                     {new Date(article.date || Date.now()).toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' })}
                                 </p>
                             </div>
-                        </Link>
+                        </ReactRouterDOM.Link>
                     ))}
                 </div>
             </section>

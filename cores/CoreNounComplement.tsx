@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 
 // Reusing the FormulaChip component structure from other cores for consistency
@@ -45,7 +46,6 @@ export default function CoreNounComplement() {
     <div className="font-[Inter,ui-sans-serif]">
       {/* HERO */}
       <div className="rounded-3xl p-6 md:p-8 border border-black/10 bg-white shadow-sm">
-        {/* Fix: Corrected Tailwind CSS typo from md:text-4dl to md:text-4xl */}
         <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
         ✨ <span className="underline decoration-4 decoration-amber-400">BỔ NGỮ</span> — <i>Complements</i>
         </h1>
@@ -85,4 +85,57 @@ export default function CoreNounComplement() {
       
       <Section id="oc" title="2. Bổ ngữ Tân ngữ (Object Complement)" emoji="📦➡️✨">
         <p>
-            <b>Bổ ngữ tân ngữ (OC)</b> theo sau một <b>tân ngữ trực tiếp
+            <b>Bổ ngữ tân ngữ (OC)</b> theo sau một <b>tân ngữ trực tiếp (direct object)</b> và mô tả hoặc định danh lại tân ngữ đó.
+        </p>
+        <div className="rounded-xl p-4 bg-purple-50 border border-purple-200">
+            <p className="font-bold text-purple-700">Cấu trúc: S + V + Direct Object + Object Complement</p>
+        </div>
+        <ul className="list-disc pl-6 mt-2">
+            <li><b>Là Tính từ:</b> <i>The news made <b>me happy</b>.</i> ('happy' mô tả 'me').</li>
+            <li><b>Là Danh từ:</b> <i>They elected <b>him president</b>.</i> ('president' định danh cho 'him').</li>
+            <li><b>Động từ thường đi với OC:</b> make, name, call, choose, elect, consider, find.</li>
+        </ul>
+      </Section>
+      
+      <Section id="comparison" title="3. So sánh Bổ ngữ & Tân ngữ" emoji="⚖️">
+        <p>
+            Điểm khác biệt chính là mối quan hệ. Bổ ngữ mô tả hoặc định danh lại một danh từ khác trong câu, trong khi tân ngữ là một thực thể riêng biệt.
+        </p>
+         <ul className="list-disc pl-6 mt-2">
+            <li><b>Bổ ngữ (Complement):</b> <i>She is <u>a teacher</u>.</i> (She = a teacher).</li>
+            <li><b>Tân ngữ (Object):</b> <i>She knows <u>a teacher</u>.</i> (She ≠ a teacher).</li>
+        </ul>
+      </Section>
+
+      <Section id="pitfalls" title="4. Lỗi thường gặp" emoji="⚠️">
+        <ol className="list-decimal pl-6">
+          <li><b>Dùng trạng từ thay cho tính từ làm bổ ngữ:</b>
+             <br/>❌ <i className="line-through">The food smells wonderfully.</i> → ✅ The food smells <b>wonderful</b>.
+          </li>
+          <li><b>Nhầm lẫn Bổ ngữ Tân ngữ với Tân ngữ Gián tiếp:</b>
+            <br/>- <i>He called me <b>a taxi</b>.</i> (Tân ngữ gián tiếp: He called a taxi for me).
+            <br/>- <i>He called me <b>a liar</b>.</i> (Bổ ngữ tân ngữ: He said that I was a liar).
+          </li>
+        </ol>
+      </Section>
+
+      <Section id="drill" title="5. Bài tập nhanh" emoji="🎮">
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+          <p className="font-semibold">Xác định các thành phần được gạch chân (SC, OC, hay DO):</p>
+          <ol className="list-decimal pl-6 mt-2 space-y-2">
+            <li>The coffee made <u>me</u> <u>energetic</u>.
+            <br/>→ me: ______, energetic: ______</li>
+            <li>My brother is <u>an engineer</u>.
+            <br/>→ an engineer: ______</li>
+            <li>We consider <u>the project</u> <u>a success</u>.
+            <br/>→ the project: ______, a success: ______</li>
+          </ol>
+        </div>
+      </Section>
+
+      <div className="mt-10 text-right">
+        <a href="#top" className="text-sm text-blue-600 hover:underline">⬆️ Về đầu trang</a>
+      </div>
+    </div>
+  );
+}
